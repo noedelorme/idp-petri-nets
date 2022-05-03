@@ -1,4 +1,4 @@
-# Interdisciplinary Project about Petri nets
+# Interdisciplinary project about Petri nets
 Efficient generation and check of separators for continuous Petri nets.
 
 ## References

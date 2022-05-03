@@ -1,7 +1,6 @@
 from z3 import * 
+from net import Net
 
-print("Hello world!")
-
-x = Int('x')
-y = Int('y')
-solve(x > 2, y < 10, x + 2*y == 7)
+if __name__ == "__main__": 
+    myNet = Net("./nets/formated/mine-2.in")
+    print(myNet.isFireable(myNet.transitions))

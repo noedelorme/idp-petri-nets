@@ -83,21 +83,22 @@ def isReachable(net: Net, m):
     Return: 
         bool: True iff m is reachable from net.marking
     """
-    if m == net.marking: return True
+    if all(m[i]==net.marking[i] for i in range(net.p)): return True
 
     Tp = net.transitions
 
     while len(Tp)>0:
         nbsol = 0
         sol = np.zeros(net.t)
+        C = net.incidenceMatrix(Tp)
         for t in Tp:
             s = Solver()
             v = np.array([Real("v%i" % i) for i in range(net.t)])
             c1 = [v[i]>=0 for i in range(net.t)]
             c2 = [v[t.id]>0]
-            CDotv = net.incidenceMatrix(Tp).dot(v)
+            CDotv = C.dot(v)
             mMinusm0 = m-net.marking
-            c3 = [CDotv[i] == mMinusm0[i] for i in range(net.t)]
+            c3 = [CDotv[i] == mMinusm0[i] for i in range(net.p)]
             s.add(c1 + c2 + c3)
             if s.check() == sat:
                 nbsol += 1
@@ -109,8 +110,8 @@ def isReachable(net: Net, m):
         Tp = net.supportTransitionVector(sol)
         oTpo = set()
         for t in Tp:
-            oTpo.union(t.preset)
-            oTpo.union(t.postset)
+            oTpo = oTpo.union(t.preset)
+            oTpo = oTpo.union(t.postset)
             
         m0oTpo = net.restriction(net.marking, oTpo)
         maxFSm0 = isFireable(net, Tp, m0oTpo)[1]
@@ -121,5 +122,4 @@ def isReachable(net: Net, m):
         Tp = Tp.intersection(maxFSm)
 
         if Tp == net.supportTransitionVector(sol): return True
-
     return False

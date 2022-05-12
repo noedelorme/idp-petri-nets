@@ -72,7 +72,7 @@ class Net:
             lines = file.readlines()
 
             [self.p,self.t] = [int(x) for x in lines[0].split(" ")]
-            self.marking = np.array([int(x) for x in lines[1].split(" ")])
+            self.marking = np.array([float(x) for x in lines[1].split(" ")])
 
             self.places = [Place(i,self.marking[i]) for i in range(self.p)]
 
@@ -82,13 +82,17 @@ class Net:
                 inArcsTable = lines[3 + i*4+1].split(" ")
                 inArcs = set()
                 for inArc in inArcsTable:
-                    [id,weight] = [int(x) for x in inArc.split(":")]
+                    temp = inArc.split(":")
+                    id = int(temp[0])
+                    weight = float(temp[1])
                     inArcs.add(InArc(self.places[id], weight))
 
                 outArcsTable = lines[3 + i*4+2].split(" ")
                 outArcs = set()
                 for outArc in outArcsTable:
-                    [id,weight] = [int(x) for x in outArc.split(":")]
+                    temp = outArc.split(":")
+                    id = int(temp[0])
+                    weight = float(temp[1])
                     outArcs.add(InArc(self.places[id], weight))
 
                 self.transitions.add(Transition(transitionId, inArcs, outArcs))

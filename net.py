@@ -94,12 +94,14 @@ class Net:
                 self.transitions.add(Transition(transitionId, inArcs, outArcs))
 
     def print(self):
-        print("Printing Petri net:", self.path)
-        print("Printing places:")
+        print("------------------------------------")
+        print("Petri net:", self.path)
+        print("Places:")
         print(self.places)
-        print("Printing transitions:")
+        print("Transitions:")
         for transition in self.transitions:
             print(transition)
+        print("------------------------------------")
 
         
     def supportMarking(self, m):
@@ -122,74 +124,3 @@ class Net:
             for inArc in t.inArcs:
                 C[inArc.place.id][t.id] -= inArc.weight
         return C
-
-    def isFireable(self, Tp, m):
-        """Decision algorithm for membership of firing set"""
-        Tpp = set()
-        Pp = self.supportMarking(m)
-        while Tpp != Tp:
-            new = False
-            for t in Tp.difference(Tpp):
-                if(t.preset.issubset(Pp)):
-                    Tpp.add(t)
-                    Pp = Pp.union(t.postset)
-                    new = True
-            if not new: return (False,Tpp)
-        return (True,Tpp)
-    
-    def isFireableInv(self, Tp, m):
-        """Decision algorithm for membership of firing set in inverse net"""
-        Tpp = set()
-        Pp = self.supportMarking(m)
-        while Tpp != Tp:
-            new = False
-            for t in Tp.difference(Tpp):
-                if(t.postset.issubset(Pp)):
-                    Tpp.add(t)
-                    Pp = Pp.union(t.preset)
-                    new = True
-            if not new: return (False,Tpp)
-        return (True,Tpp)
-
-    def isReachable(self, m):
-        """Decision algorithm for reachability"""
-        if m == self.marking: return True
-
-        Tp = self.transitions
-
-        while len(Tp)>0:
-            nbsol = 0
-            sol = np.zeros(self.t)
-            for t in Tp:
-                s = Solver()
-                v = np.array([Real("v%i" % i) for i in range(self.t)])
-                c1 = [v[i]>=0 for i in range(self.t)]
-                c2 = [v[t.id]>0]
-                CDotv = self.incidenceMatrix(Tp).dot(v)
-                mMinusm0 = np.array(m)-np.array(self.marking)
-                c3 = [CDotv[i] == (mMinusm0)[i] for i in range(self.t)]
-                s.add(c1 + c2 + c3)
-                if s.check() == sat:
-                    nbsol += 1
-                    model = np.array([s.model()[v[i]].as_fraction() for i in range(self.t)])
-                    sol += np.array([float(x.numerator)/float(x.denominator) for x in model])
-            if nbsol==0: return False
-            else: sol /= nbsol
-
-            Tp = self.supportTransitionVector(sol)
-            oTpo = set()
-            for t in Tp:
-                oTpo.union(t.preset)
-                oTpo.union(t.postset)
-            
-            m0oTpo = self.restriction(self.marking, oTpo)
-            maxFSm0 = self.isFireable(Tp, m0oTpo)[1]
-            Tp = Tp.intersection(maxFSm0)
-
-            moTpo = self.restriction(m, oTpo)
-            maxFSm0Inv = self.isFireableInv(Tp, moTpo)[1]
-            Tp = Tp.intersection(maxFSm0Inv)
-
-            if Tp == self.supportTransitionVector(sol): return True
-
-        return False

@@ -66,13 +66,13 @@ class Net:
         self.t = 0
         self.places = []
         self.transitions = set()
-        self.marking = []
+        self.marking = np.zeros(self.p)
 
         with open(path, "r") as file:
             lines = file.readlines()
 
             [self.p,self.t] = [int(x) for x in lines[0].split(" ")]
-            self.marking = [int(x) for x in lines[1].split(" ")]
+            self.marking = np.array([int(x) for x in lines[1].split(" ")])
 
             self.places = [Place(i,self.marking[i]) for i in range(self.p)]
 
@@ -111,7 +111,7 @@ class Net:
         return set([x for x in self.transitions if v[x.id]>0])
     
     def restriction(self, m, P):
-        marking = [0 for i in range(self.p)]
+        marking = np.zeros(self.p)
         for p in P:
             marking[p.id] = m[p.id]
         return marking

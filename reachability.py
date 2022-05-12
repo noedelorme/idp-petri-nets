@@ -2,7 +2,7 @@ import numpy as np
 from z3 import *
 from net import Net
 
-def isFireable(net: Net, Tp, m, inv=False):
+def isFireableDumb(net: Net, Tp, m, inv=False):
     """
     Decision algorithm for membership of firing set
 
@@ -34,6 +34,44 @@ def isFireable(net: Net, Tp, m, inv=False):
         if not new: return (False,Tpp)
     return (True,Tpp)
 
+
+
+def isFireable(net: Net, Tp, m, inv=False):
+    """
+    Decision algorithm for membership of firing set
+
+    Args:
+        net: the net
+        Tp: the subset of transitions to check
+        m: a marking
+        inv: True iff we check in the inverse net
+
+    Return: 
+        bool: True iff Tp is a firing set
+        Tpp: the maximal firing set included in Tp
+    """
+    Tpp = Tp.copy()
+    Pp = net.supportMarking(m)
+    while len(Tpp)>0:
+        new = False
+        removed = []
+        for t in Tpp:
+            if not inv:
+                if(t.preset.issubset(Pp)):
+                    removed.append(t)
+                    Pp = Pp.union(t.postset)
+                    new = True
+            else:
+                if(t.postset.issubset(Pp)):
+                    removed.append(t)
+                    Pp = Pp.union(t.preset)
+                    new = True
+        for t in removed: Tpp.remove(t)
+        if not new: return (False,Tp.difference(Tpp))
+    return (True,Tp.difference(Tpp))
+
+
+
 def isReachable(net: Net, m):
     """
     Decision algorithm for reachability
@@ -58,8 +96,8 @@ def isReachable(net: Net, m):
             c1 = [v[i]>=0 for i in range(net.t)]
             c2 = [v[t.id]>0]
             CDotv = net.incidenceMatrix(Tp).dot(v)
-            mMinusm0 = np.array(m)-np.array(net.marking)
-            c3 = [CDotv[i] == (mMinusm0)[i] for i in range(net.t)]
+            mMinusm0 = m-net.marking
+            c3 = [CDotv[i] == mMinusm0[i] for i in range(net.t)]
             s.add(c1 + c2 + c3)
             if s.check() == sat:
                 nbsol += 1
@@ -75,12 +113,12 @@ def isReachable(net: Net, m):
             oTpo.union(t.postset)
             
         m0oTpo = net.restriction(net.marking, oTpo)
-        maxFSm0 = net.isFireable(Tp, m0oTpo)[1]
+        maxFSm0 = isFireable(net, Tp, m0oTpo)[1]
         Tp = Tp.intersection(maxFSm0)
 
         moTpo = net.restriction(m, oTpo)
-        maxFSm0Inv = net.isFireableInv(Tp, moTpo)[1]
-        Tp = Tp.intersection(maxFSm0Inv)
+        maxFSm = isFireable(net, Tp, moTpo, True)[1]
+        Tp = Tp.intersection(maxFSm)
 
         if Tp == net.supportTransitionVector(sol): return True
 

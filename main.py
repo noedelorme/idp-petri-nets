@@ -1,6 +1,6 @@
 import numpy as np
 from z3 import *
-from Net import Net
+from net import Net
 from reachability import *
 from separators import *
 

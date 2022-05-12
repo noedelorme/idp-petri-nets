@@ -1,6 +1,6 @@
 import numpy as np
 from z3 import *
-from Net import Net
+from net import Net
 
 def isFireable(net: Net, Tp, m, inv=False):
     """

@@ -1,6 +1,38 @@
 import numpy as np
+import time
 from z3 import *
 from objects.Net import Net
+
+def sparseDot(A,v):
+    """Return the matrix product Av"""
+    p,t = A.shape
+    Av = np.array([RealVal(0) for i in range(p)])
+
+    currentIndPtr = 0
+    for i in range(p):
+        sum = RealVal(0)
+        for j in range(A.indptr[currentIndPtr], A.indptr[currentIndPtr+1]):
+            sum += A.data[j]*v[A.indices[j]]
+        Av[i] = simplify(sum)
+        currentIndPtr += 1
+
+    return Av
+
+
+
+def modelToFloat(model, vars):
+    """Convert a Z3 model into a float numpy array"""
+    t = len(vars)
+    modelFloat = np.zeros(t)
+    for i in range(t):
+        texts = model[vars[i]].as_string().split("/")
+        if len(texts)==1:
+            modelFloat[i] = float(texts[0])
+        else:
+            modelFloat[i] = float(texts[0])/float(texts[1])
+    return modelFloat
+
+
 
 def isFireableDumb(net: Net, Tp, m, inv=False):
     """
@@ -83,27 +115,43 @@ def isReachable(net: Net, m):
     Return: 
         bool: True iff m is reachable from net.marking
     """
-    if all(m[i]==net.marking[i] for i in range(net.p)): return True
 
-    Tp = net.transitions
+    if all(m[i]==net.marking[i] for i in range(net.p)): return True
+    
+    Tp = net.transitions.copy()
 
     while len(Tp)>0:
         nbsol = 0
         sol = np.zeros(net.t)
+
+        s = Solver()
+        v = np.array([Real("v%i" % i) for i in range(net.t)])
+        positiveCstrt = [v[i]>=0 for i in range(net.t)]
         C = net.incidenceMatrix(Tp)
+        CDotv = sparseDot(C,v)
+        mMinusm0 = m-net.marking
+        matrixCstrt = [CDotv[i] == mMinusm0[i] for i in range(net.p)]
+        s.add(positiveCstrt+matrixCstrt)
+
+        count = 0
         for t in Tp:
-            s = Solver()
-            v = np.array([Real("v%i" % i) for i in range(net.t)])
-            c1 = [v[i]>=0 for i in range(net.t)]
-            c2 = [v[t.id]>0]
-            CDotv = C.dot(v)
-            mMinusm0 = m-net.marking
-            c3 = [CDotv[i] == mMinusm0[i] for i in range(net.p)]
-            s.add(c1 + c2 + c3)
-            if s.check() == sat:
+            count += 1
+            print(str(round(count/len(Tp)*100, 2))+"%")
+
+            s.push()
+            s.add(v[t.id]>0)
+            temp = s.check()
+            
+            if temp == sat:
                 nbsol += 1
-                model = np.array([s.model()[v[i]].as_fraction() for i in range(net.t)])
-                sol += np.array([float(x.numerator)/float(x.denominator) for x in model])
+                model = s.model()
+                # modelFraction = np.array([model[v[i]].as_fraction() for i in range(net.t)])
+                # sol += np.array([float(x.numerator)/float(x.denominator) for x in modelFraction])
+                modelFraction = modelToFloat(model,v)
+                sol += modelFraction
+                
+            s.pop()
+
         if nbsol==0: return False
         else: sol /= nbsol
 

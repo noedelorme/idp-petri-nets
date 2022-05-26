@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.sparse import csr_matrix
 import time
 from z3 import *
 from objects.Net import Net
@@ -7,11 +8,16 @@ from tasks.reachability import *
 from tasks.separators import *
 
 
-path = "./nets/homemade/mine-1"
+path = "./nets/random-walk/pipe__single_message_in_mailbox__depth_1_multi_50_0"
 net = createNet(path+".lola")
 m = createMarking(net, path+".formula")
 start = time.time()
 answer = isReachable(net, m)
 stop = time.time()
+print("--------------------------")
+print("Petri net:", path)
+print("Number of places:", net.p)
+print("Number of transitions:", net.t)
 print("Output:", answer)
 print("Time elapsed:", stop-start)
+print("--------------------------")

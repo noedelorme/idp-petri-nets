@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.sparse import csr_matrix
 from z3 import *
 
 class Place:
@@ -102,4 +103,4 @@ class Net:
                 C[outArc.place.id][t.id] += outArc.weight
             for inArc in t.inArcs:
                 C[inArc.place.id][t.id] -= inArc.weight
-        return C
+        return csr_matrix(C)

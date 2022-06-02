@@ -1,0 +1,23 @@
+mine-1.lola
+mine-1.formula True
+
+mine-2.lola
+mine-2.formula True
+
+mine-3.lola
+mine-3-1.formula True
+mine-3-2.formula True
+mine-3-3.formula True
+mine-3-4.formula False
+mine-3-5.formula False
+
+mine-4.lola
+mine-4-1.formula True
+mine-4-2.formula True
+mine-4-3.formula True
+
+figure-1a-haddad.lola
+figure-1a-haddad.formula False
+
+figure-1-esparza.lola
+figure-1-esparza.formula False

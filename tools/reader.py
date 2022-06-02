@@ -83,6 +83,7 @@ def createMarking(net, path):
     marking = np.zeros(net.p)
     for text in atoms:
         temp = text.replace(" ","")
+        temp = temp.replace(">","")
         placeName = temp.split("=")[0]
         token = float(temp.split("=")[1])
         marking[net.placeIds[placeName]] = token

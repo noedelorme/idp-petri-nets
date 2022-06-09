@@ -1,37 +1,8 @@
 import numpy as np
 import time
 from z3 import *
+from tasks.utilities import *
 from objects.Net import Net
-
-def sparseDot(A,v):
-    """Return the matrix product Av"""
-    p,t = A.shape
-    Av = np.array([RealVal(0) for i in range(p)])
-
-    currentIndPtr = 0
-    for i in range(p):
-        sum = RealVal(0)
-        for j in range(A.indptr[currentIndPtr], A.indptr[currentIndPtr+1]):
-            sum += A.data[j]*v[A.indices[j]]
-        Av[i] = simplify(sum)
-        currentIndPtr += 1
-
-    return Av
-
-
-
-def modelToFloat(model, vars):
-    """Convert a Z3 model into a float numpy array"""
-    n = len(vars)
-    modelFloat = np.zeros(n)
-    for i in range(n):
-        texts = model[vars[i]].as_string().split("/")
-        if len(texts)==1:
-            modelFloat[i] = float(texts[0])
-        else:
-            modelFloat[i] = float(texts[0])/float(texts[1])
-    return modelFloat
-
 
 
 def isFireable(net: Net, Tp, m, inv=False):

@@ -4,9 +4,21 @@ import numpy as np
 from objects.Net import *
 
 def cleanLine(line):
+    """
+    Erase space, dot comma and line break from a string.
+    """
     return line.replace(" ","").replace(";","").replace("\n","")
 
 def createNet(path):
+    """
+    Creates a Petri net from a .lola file.
+
+    Args:
+        path: path of the .lola file
+
+    Return:
+        net: the Petri net as a Net object
+    """
     name = path
     p = 0
     t = 0
@@ -68,7 +80,18 @@ def createNet(path):
 
     return Net(name, places, transitions, marking, placeIds, transitionIds)
 
+
 def createMarking(net, path):
+    """
+    Creates a marking from a .formula file.
+
+    Args:
+        net: the corresponding Petri net
+        path: path of the .formula file
+
+    Return:
+        marking: the marking as a np.array 
+    """
     formula = ""
     with open(path, "r") as file:
         formula = file.read()

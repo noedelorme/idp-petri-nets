@@ -18,6 +18,9 @@ class Atom:
         self.a = a
         self.ap = ap
         self.strict = strict
+    
+    def __repr__(self):
+        return (self.a, self.ap)
 
     def check(self, m, mp):
         return np.dot(self.a,m)<=np.dot(self.ap,mp)
@@ -35,6 +38,9 @@ class Clause:
     def __init__(self, atoms):
         self.size = len(atoms)
         self.atoms = atoms
+    
+    def __repr__(self):
+        return self.atoms
     
     def addAtom(self, atom):
         self.atoms.append(atom)
@@ -61,6 +67,9 @@ class Formula:
     def __init__(self, clauses):
         self.size = len(clauses)
         self.clauses = clauses
+    
+    def __repr__(self):
+        return self.clauses
     
     def addClause(self, clause):
         self.clauses.append(clause)

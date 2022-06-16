@@ -52,8 +52,27 @@ def modelToFloat(model, vars):
 
 
 
+def placeVectorToSet(net: Net, vectS):
+    S = set()
+    for i in range(net.p):
+        if vectS[i]>0:
+            S.add(net.places[i])
+    return S
+
 def transitionSetToVector(net: Net, U):
     vectU = np.zeros(net.t)
     for t in U:
         vectU[t.id] = 1
     return vectU
+
+def placeSetPostset(net: Net, S):
+    postset = set()
+    for p in S:
+        postset = postset.union(p.postset)
+    return postset
+
+def placeSetPreset(net: Net, S):
+    preset = set()
+    for p in S:
+        preset = preset.union(p.preset)
+    return preset

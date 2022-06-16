@@ -37,12 +37,17 @@ from tasks.separators import *
 # print("Time elapsed:", stop-start)
 # print("--------------------------")
 
-path = "./nets/reachability/random-walk/Boop_simple_vf_satabs.2_multi_100_0"
+path = "./nets/reachability/homemade/figure-1-esparza"
 net = createNet(path+".lola")
-b = np.zeros(net.p)
-b[0]=1
-b[5]=1
-b[10]=1
-b[16]=1
-a = largestSiphon(net, net.transitions, b)
-print(a)
+m = createMarking(net, path+".formula")
+start = time.time()
+sep = locallyClosedBiSeparator(net, net.transitions, net.marking, m)
+stop = time.time()
+print("--------------------------")
+print("Petri net:", path)
+print("Number of places:", net.p)
+print("Number of transitions:", net.t)
+print("Separator:")
+print(sep)
+print("Time elapsed:", stop-start)
+print("--------------------------")

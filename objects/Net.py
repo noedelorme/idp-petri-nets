@@ -88,8 +88,10 @@ class Transition:
         self.outArcs = outArcs
         for inArc in inArcs:
             self.preset.add(inArc.place)
+            inArc.place.postset.add(self)
         for outArc in outArcs:
             self.postset.add(outArc.place)
+            outArc.place.preset.add(self)
 
     def __repr__(self):
         line = "[" + self.name + ":" + str(self.id) + "]["

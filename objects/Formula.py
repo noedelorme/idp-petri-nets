@@ -6,12 +6,21 @@ from objects.Net import Net
 
 class Atom:
     """
-    Class for atomic proposition of the form a*x<=b or a*x<b.
+    Class for atomic proposition of the form a*m<=ap*mp or a*m<ap*mp.
+
+    Attributs:
+        a: numpy array
+        ap: numpy array
+        strict: True iff strict atom
     """
 
-    def __init__(self):
-        pass
+    def __init__(self, a, ap, strict=False):
+        self.a = a
+        self.ap = ap
+        self.strict = strict
 
+    def check(self, m, mp):
+        return np.dot(self.a,m)<=np.dot(self.ap,mp)
 
 
 class Clause:
@@ -30,6 +39,12 @@ class Clause:
     def addAtom(self, atom):
         self.atoms.append(atom)
         self.size += 1
+
+    def check(self, m, mp):
+        for atom in self.atoms:
+            if not atom.check(m,mp):
+                return False
+        return True
 
 
 
@@ -50,3 +65,9 @@ class Formula:
     def addClause(self, clause):
         self.clauses.append(clause)
         self.size += 1
+
+    def check(self, m, mp):
+        for clause in self.clauses:
+            if clause.check(m,mp):
+                return True
+        return False

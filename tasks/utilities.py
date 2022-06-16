@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.sparse import csr_matrix
 from z3 import *
+from objects.Net import Net
 
 def sparseDot(A,v):
     """
@@ -8,7 +9,7 @@ def sparseDot(A,v):
 
     Args:
         A: a p*t matrix in CSR format
-        v: a np.array of size t
+        v: a np.array of Z3 Real of size t
     
     Return:
         Av: matrix product Av as np.array
@@ -48,3 +49,11 @@ def modelToFloat(model, vars):
         else:
             modelFloat[i] = float(texts[0])/float(texts[1])
     return modelFloat
+
+
+
+def transitionSetToVector(net: Net, U):
+    vectU = np.zeros(net.t)
+    for t in U:
+        vectU[t.id] = 1
+    return vectU

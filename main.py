@@ -37,7 +37,7 @@ from tasks.separators import *
 # print("Time elapsed:", stop-start)
 # print("--------------------------")
 
-path = "./nets/reachability/homemade/figure-1-esparza"
+path = "./nets/reachability/homemade/figure-1a-haddad"
 net = createNet(path+".lola")
 m = createMarking(net, path+".formula")
 start = time.time()
@@ -48,6 +48,21 @@ print("Petri net:", path)
 print("Number of places:", net.p)
 print("Number of transitions:", net.t)
 print("Separator:")
-print(sep)
+sep.print()
 print("Time elapsed:", stop-start)
 print("--------------------------")
+
+# path = "./nets/reachability/homemade/figure-1-esparza"
+# net = createNet(path+".lola")
+# m = createMarking(net, path+".formula")
+# start = time.time()
+# sep = locallyClosedBiSeparator(net, net.transitions, net.marking, m)
+# stop = time.time()
+# print("--------------------------")
+# print("Petri net:", path)
+# print("Number of places:", net.p)
+# print("Number of transitions:", net.t)
+# print("Separator:")
+# sep.print()
+# print("Time elapsed:", stop-start)
+# print("--------------------------")

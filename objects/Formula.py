@@ -20,7 +20,10 @@ class Atom:
         self.strict = strict
     
     def __repr__(self):
-        return (self.a, self.ap)
+        if self.strict:
+            return str(self.a)+"*m<"+str(self.ap)+"*m'"
+        else: 
+            return str(self.a)+"*m<="+str(self.ap)+"*m'"
 
     def check(self, m, mp):
         return np.dot(self.a,m)<=np.dot(self.ap,mp)
@@ -40,7 +43,12 @@ class Clause:
         self.atoms = atoms
     
     def __repr__(self):
-        return self.atoms
+        text = ""
+        for i in range(len(self.atoms)):
+            text += str(self.atoms[i])
+            if i!=len(self.atoms)-1:
+                text += " AND "
+        return text
     
     def addAtom(self, atom):
         self.atoms.append(atom)
@@ -68,8 +76,11 @@ class Formula:
         self.size = len(clauses)
         self.clauses = clauses
     
-    def __repr__(self):
-        return self.clauses
+    def print(self):
+        for i in range(len(self.clauses)):
+            print(self.clauses[i])
+            if i!=len(self.clauses)-1:
+                print("OR")
     
     def addClause(self, clause):
         self.clauses.append(clause)

@@ -42,12 +42,13 @@ def modelToFloat(model, vars):
     """
     n = len(vars)
     modelFloat = np.zeros(n)
-    for i in range(n):
-        texts = model[vars[i]].as_string().split("/")
+    for d in model.decls():
+        id = int(d.name()[1:])
+        texts = model[d].as_string().split("/")
         if len(texts)==1:
-            modelFloat[i] = float(texts[0])
+            modelFloat[id] = float(texts[0])
         else:
-            modelFloat[i] = float(texts[0])/float(texts[1])
+            modelFloat[id] = float(texts[0])/float(texts[1])
     return modelFloat
 
 

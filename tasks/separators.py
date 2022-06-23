@@ -110,29 +110,36 @@ def locallyClosedBiSeparator(net: Net, U, msrc, mtgt):
     Return:
         bisep: a bi-separator for (msrc,mtgt)
     """
+    print("--------------Recursive call, len(U)=:", len(U))
+
     if len(U)==0:
         p = 0
-        while msrc[p]==mtgt[p] and p<net.p: p+=1
-        assert p>=net.p, "Error: msrc=mtgt"
+        while msrc[p]==mtgt[p] and p<net.p:
+            p += 1
+        assert p<net.p, "Error: msrc=mtgt"
         a = np.zeros(net.p)
         a[p] = copysign(1,msrc[p]-mtgt[p])
 
-        return Formula(Clause([Atom(a, a)]))
+        return Formula([Clause([Atom(a, a)])])
     
     b = mtgt - msrc
 
     X = Solver()
     x = np.array([Real("x%i" % i) for i in range(net.t)])
+    positiveCstrt = [x[i]>=0 for i in range(net.t)]
     F = net.incidenceMatrix(net.transitions)
+    X.add(positiveCstrt)
     FDotx = sparseDot(F, x)
     matrixCstrt = [FDotx[i] == b[i] for i in range(net.p)]
+    X.add(matrixCstrt)
     vectU = transitionSetToVector(net, U)
-    inclusionCstrt = [Or(x[i]==0, vectU[i]>0) for i in range(net.t)]
-    X.add(matrixCstrt+inclusionCstrt)
+    inclusionCstrt = [Or(x[i]==0, bool(vectU[i]>0)) for i in range(net.t)]
+    X.add(inclusionCstrt)
 
     Y = Solver()
-    y = np.array([Real("x%i" % i) for i in range(net.p)])
-    FTDoty = sparseDot(F.transpose, y)
+    y = np.array([Real("y%i" % i) for i in range(net.p)])
+    FT = csr_matrix(F.transpose())
+    FTDoty = sparseDot(FT, y)
     matrixCstrt = [FTDoty[t.id]>=0 for t in U]
     Y.add(matrixCstrt)
     bTDoty = b.dot(y)
@@ -141,10 +148,10 @@ def locallyClosedBiSeparator(net: Net, U, msrc, mtgt):
     if X.check() == unsat:
         Y.push()
         Y.add(bTDoty < 0)
-        Y.check()
+        assert Y.check()==sat, "Error: Y_empty has no solution"
         yempty = modelToFloat(Y.model(),y)
         Y.pop()
-        return Formula(Clause([Atom(yempty, yempty)]))
+        return Formula([Clause([Atom(yempty, yempty)])])
     else:
         Up = set()
         for u in U:
@@ -153,23 +160,21 @@ def locallyClosedBiSeparator(net: Net, U, msrc, mtgt):
             if X.check() == sat:
                 Up.add(u)
             X.pop()
-        
+
         clauses_case1 = []
         phi_inv = []
         UDiffUp = U.difference(Up)
         for t in UDiffUp:
             Y.push()
             Y.add(bTDoty < FTDoty[t.id])
-            Y.check()
+            assert Y.check()==sat, "Error: Y has no solution"
             yt = modelToFloat(Y.model(),y)
             Y.pop()
-
+            phi_inv.append(Atom(yt, yt))
+            clause = Clause([Atom(yt, yt, strict=True)])
+            clauses_case1.append(clause)
             if np.dot(yt,msrc)>np.dot(yt,mtgt):
-                phi_t = Atom(yt, yt, strict=True)
-                clause = Clause([phi_t])
-                clauses_case1.append(clause)
-                phi_inv.append(Atom(yt, yt))
-                return Formula(clause)
+                return Formula([clause])
 
         vectQ = largestSiphon(net, Up, msrc)
         Q = placeVectorToSet(net, vectQ)
@@ -182,10 +187,10 @@ def locallyClosedBiSeparator(net: Net, U, msrc, mtgt):
         UpDiffQoUoR = Up.difference(QoUoR)
         psi = locallyClosedBiSeparator(net, UpDiffQoUoR, msrc, mtgt)
 
-        case2 = Clause(phi_inv+[Atom(-vectQ, -vectR, strict=True)])
+        case2 = Clause(phi_inv+[Atom(-vectQ, vectR, strict=True)])
 
         clauses_case3 = []
-        atomSiphonTrap = Atom(vectR, vectQ)
+        atomSiphonTrap = Atom(vectR, -vectQ)
         for clause in psi.clauses:
             clauses_case3.append(Clause(phi_inv+[atomSiphonTrap]+clause.atoms))
 

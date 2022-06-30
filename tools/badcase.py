@@ -1,7 +1,7 @@
 # number of places: 2*size+2
 # number of transitions: 3*size+1
 
-size = 95
+size = 2
 path = "./nets/reachability/homemade/bad-case-"+str(size)
 
 with open(path+".lola", "a") as file:

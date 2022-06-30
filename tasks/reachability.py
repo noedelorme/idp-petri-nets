@@ -73,7 +73,7 @@ def isReachable(net: Net, m):
         count = 0
         for t in Tp:
             count += 1
-            # print(str(round(count/len(Tp)*100, 2))+"%")
+            print(str(round(count/len(Tp)*100, 2))+"%")
 
             s.push()
             s.add(v[t.id]>0)

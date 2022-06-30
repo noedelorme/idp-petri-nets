@@ -26,7 +26,10 @@ class Atom:
             return str(self.a)+"*m<="+str(self.ap)+"*m'"
 
     def check(self, m, mp):
-        return np.dot(self.a,m)<=np.dot(self.ap,mp)
+        if self.strict:
+            return np.dot(self.a,m)<np.dot(self.ap,mp)
+        else:
+            return np.dot(self.a,m)<=np.dot(self.ap,mp)
 
 
 class Clause:
@@ -81,6 +84,12 @@ class Formula:
             print(self.clauses[i])
             if i!=len(self.clauses)-1:
                 print("OR")
+    
+    def getSize(self):
+        text = "[" + str(self.size) + "]"
+        for clause in self.clauses:
+            text += str(clause.size) + ","
+        return text[:-1]
     
     def addClause(self, clause):
         self.clauses.append(clause)

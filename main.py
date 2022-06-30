@@ -8,7 +8,7 @@ from tasks.reachability import *
 from tasks.separators import *
 
 
-# path = "./nets/reachability/homemade/bad-case-5"
+# path = "./nets/reachability/random-walk/dekker_vs_satabs.2_multi_100_0"
 # net = createNet(path+".lola")
 # m = createMarking(net, path+".formula")
 # start = time.time()
@@ -37,7 +37,7 @@ from tasks.separators import *
 # print("Time elapsed:", stop-start)
 # print("--------------------------")
 
-path = "./nets/reachability/homemade/figure-1a-haddad"
+path = "./nets/reachability/homemade/figure-1-esparza"
 net = createNet(path+".lola")
 m = createMarking(net, path+".formula")
 start = time.time()
@@ -47,22 +47,9 @@ print("--------------------------")
 print("Petri net:", path)
 print("Number of places:", net.p)
 print("Number of transitions:", net.t)
-print("Separator:")
-sep.print()
+print("Separator size:", sep.getSize())
+# sep.print()
+check = sep.check(net.marking, net.marking) and sep.check(m, m) and not sep.check(net.marking, m)
+print("Sanity check:", check)
 print("Time elapsed:", stop-start)
 print("--------------------------")
-
-# path = "./nets/reachability/homemade/figure-1-esparza"
-# net = createNet(path+".lola")
-# m = createMarking(net, path+".formula")
-# start = time.time()
-# sep = locallyClosedBiSeparator(net, net.transitions, net.marking, m)
-# stop = time.time()
-# print("--------------------------")
-# print("Petri net:", path)
-# print("Number of places:", net.p)
-# print("Number of transitions:", net.t)
-# print("Separator:")
-# sep.print()
-# print("Time elapsed:", stop-start)
-# print("--------------------------")

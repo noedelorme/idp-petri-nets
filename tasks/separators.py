@@ -30,7 +30,7 @@ def largestSiphon(net: Net, Up, msrc):
                 if t in Up:
                     vectQo[t.id] += 1
 
-    # while there is p in vectQ s.t. some t in °p is not in Q°
+    # while there is p in Q s.t. some t in °p is not in Q°
     flag = True
     while flag:
         flag = False
@@ -38,7 +38,7 @@ def largestSiphon(net: Net, Up, msrc):
             breakFirstLoop = False
             if vectQ[i]==1:
                 for t in net.places[i].preset:
-                    if vectQo[t.id]==0:
+                    if t in Up and vectQo[t.id]==0:
                         # then we remove p and update Q°
                         vectQ[i] = 0
                         for u in net.places[i].postset:
@@ -74,7 +74,7 @@ def largestTrap(net: Net, Up, mtgt):
                 if t in Up:
                     vectoR[t.id] += 1
 
-    # while there is p in vectR s.t. some t in p° is not in °Q
+    # while there is p in R s.t. some t in p° is not in °Q
     flag = True
     while flag:
         flag = False
@@ -82,7 +82,7 @@ def largestTrap(net: Net, Up, mtgt):
             breakFirstLoop = False
             if vectR[i]==1:
                 for t in net.places[i].postset:
-                    if vectoR[t.id]==0:
+                    if t in Up and vectoR[t.id]==0:
                         # then we remove p and update °Q
                         vectR[i] = 0
                         for u in net.places[i].preset:
@@ -110,7 +110,7 @@ def locallyClosedBiSeparator(net: Net, U, msrc, mtgt):
     Return:
         bisep: a bi-separator for (msrc,mtgt)
     """
-    print("--------------Recursive call, len(U)=:", len(U))
+    # print("--------------Recursive call, len(U)=:", len(U))
 
     if len(U)==0:
         p = 0
@@ -133,7 +133,7 @@ def locallyClosedBiSeparator(net: Net, U, msrc, mtgt):
     matrixCstrt = [FDotx[i] == b[i] for i in range(net.p)]
     X.add(matrixCstrt)
     vectU = transitionSetToVector(net, U)
-    inclusionCstrt = [Or(x[i]==0, bool(vectU[i]>0)) for i in range(net.t)]
+    inclusionCstrt = [simplify(Or(x[i]==0, bool(vectU[i]>0))) for i in range(net.t)]
     X.add(inclusionCstrt)
 
     Y = Solver()
@@ -160,7 +160,7 @@ def locallyClosedBiSeparator(net: Net, U, msrc, mtgt):
             if X.check() == sat:
                 Up.add(u)
             X.pop()
-
+        
         clauses_case1 = []
         phi_inv = []
         UDiffUp = U.difference(Up)

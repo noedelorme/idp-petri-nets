@@ -94,14 +94,15 @@ class Transition:
             outArc.place.preset.add(self)
 
     def __repr__(self):
-        line = "[" + self.name + ":" + str(self.id) + "]["
-        for inArc in self.inArcs:
-            line += inArc.place.name + ":" + str(inArc.place.id) + "(" + str(inArc.weight) + ") "
-        line = line[:-1] + "]["
-        for outArc in self.outArcs:
-            line += outArc.place.name + ":" + str(outArc.place.id) + "(" + str(outArc.weight) + ") "
-        line = line[:-1] + "]"
-        return line
+        # line = "[" + self.name + ":" + str(self.id) + "]["
+        # for inArc in self.inArcs:
+        #     line += inArc.place.name + ":" + str(inArc.place.id) + "(" + str(inArc.weight) + ") "
+        # line = line[:-1] + "]["
+        # for outArc in self.outArcs:
+        #     line += outArc.place.name + ":" + str(outArc.place.id) + "(" + str(outArc.weight) + ") "
+        # line = line[:-1] + "]"
+        # return line
+        return self.name
     
     def fire(self, alpha):
         enabled = all(inArc.isEnabled(alpha) for inArc in self.inArcs)

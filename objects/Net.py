@@ -102,7 +102,7 @@ class Transition:
         #     line += outArc.place.name + ":" + str(outArc.place.id) + "(" + str(outArc.weight) + ") "
         # line = line[:-1] + "]"
         # return line
-        return self.name
+        return self.name + ":" + str(self.id)
     
     def fire(self, alpha):
         enabled = all(inArc.isEnabled(alpha) for inArc in self.inArcs)
@@ -207,3 +207,18 @@ class Net:
             for inArc in t.inArcs:
                 C[inArc.place.id][t.id] -= inArc.weight
         return csr_matrix(C)
+
+    def tVectorPlus(self, t: Transition):
+        vect = np.zeros(self.p)
+        for arc in t.outArcs:
+            vect[arc.place.id] += arc.weight
+        return vect
+
+    def tVectorMinus(self, t: Transition):
+        vect = np.zeros(self.p)
+        for arc in t.inArcs:
+            vect[arc.place.id] += arc.weight
+        return vect
+    
+    def tVector(self, t: Transition):
+        return self.tVectorPlus(t) - self.tVectorMinus(t)

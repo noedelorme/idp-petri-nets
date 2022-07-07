@@ -7,7 +7,7 @@ You need first to unstall <a href="https://github.com/Z3Prover/z3">Z3</a>, which
 pip install z3-solver
 ```
 
-To execute the program, just use the follwing command.
+To execute the program, just use the following command.
 ```bash
 python main.py
 ```

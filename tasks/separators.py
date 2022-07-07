@@ -5,6 +5,7 @@ import time
 from z3 import *
 from tasks.utilities import *
 from objects.Net import Net
+from objects.Net import Net, Transition, Place
 from objects.Formula import Formula, Clause, Atom
 
 
@@ -96,7 +97,7 @@ def largestTrap(net: Net, Up, mtgt):
 
 
 
-def locallyClosedBiSeparator(net: Net, U, msrc, mtgt):
+def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
     """
     Constructs a locally closed bi-separator for (msrc,mtgt) given 
     that mtgt is not reachable from msrc using transitions in U.
@@ -185,7 +186,7 @@ def locallyClosedBiSeparator(net: Net, U, msrc, mtgt):
         
         QoUoR = Qo.union(oR)
         UpDiffQoUoR = Up.difference(QoUoR)
-        psi = locallyClosedBiSeparator(net, UpDiffQoUoR, msrc, mtgt)
+        psi = generateLocallyClosedBiSeparator(net, UpDiffQoUoR, msrc, mtgt)
 
         case2 = Clause(phi_inv+[Atom(-vectQ, vectR, strict=True)])
 
@@ -197,3 +198,81 @@ def locallyClosedBiSeparator(net: Net, U, msrc, mtgt):
         clauses = clauses_case1 + [case2] + clauses_case3
         bisep = Formula(clauses)
         return bisep
+
+
+
+def atomicImplication(net: Net, psi: Atom, psip: Atom, t: Transition, inv=False):
+    a,ap,minus_bp,l = None,None,None,None
+    if not inv:
+        a = np.concatenate((psi.a, -psi.ap))
+        ap = np.concatenate((psip.a, -psip.ap))
+        minus_bp = np.dot(a, np.concatenate((np.zeros(net.p), net.tVector(t))))
+        l = np.concatenate((np.zeros(net.p), net.tVectorMinus(t)))
+    else:
+        a = np.concatenate((-psi.ap, psi.a))
+        ap = np.concatenate((-psip.ap, psip.a))
+        minus_bp = np.dot(a, np.concatenate((np.zeros(net.p), -net.tVector(t))))
+        l = np.concatenate((np.zeros(net.p), net.tVectorPlus(t)))
+
+    s = Solver()
+    lamb = Real("lamb")
+    
+    s.add([lamb*a[i]>=ap[i] for i in range(2*net.p)])
+    product = 0
+    for i in range(2*net.p):
+        product += (lamb*a[i]-ap[i])*l[i]
+    product = simplify(product)
+    if not psip.strict:
+        s.add(product>=minus_bp)
+    elif not psi.strict:
+        s.add(product>minus_bp)
+    else:
+        s.add(Or(product>minus_bp, And(product==minus_bp, lamb>0)))
+    return s.check()==sat
+
+
+
+def checkLocallyClosedBiSeparator(net: Net, phi: Formula, msrc, mtgt):
+    for t in net.transitions:
+        for clause_i in phi.clauses:
+            flag_clause_i = False
+            for clause_j in phi.clauses:
+                flag_clause_j = True
+                for psi in clause_i.atoms:
+                    flag_psi = False
+                    for psip in clause_j.atoms:
+                        if atomicImplication(net, psi, psip, t):
+                            flag_psi = True
+                            break
+                    if not flag_psi:
+                        flag_clause_j = False
+                        break
+                if flag_clause_j:
+                    flag_clause_i = True
+                    break
+            if not flag_clause_i:
+                answer = False
+                return answer
+    print("test")
+    for t in net.transitions:
+        for clause_i in phi.clauses:
+            flag_clause_i = False
+            for clause_j in phi.clauses:
+                flag_clause_j = True
+                for psi in clause_i.atoms:
+                    flag_psi = False
+                    for psip in clause_j.atoms:
+                        if atomicImplication(net, psi, psip, t, inv=True):
+                            flag_psi = True
+                            break
+                    if not flag_psi:
+                        flag_clause_j = False
+                        break
+                if flag_clause_j:
+                    flag_clause_i = True
+                    break
+            if not flag_clause_i:
+                answer = False
+                return answer
+    
+    return True

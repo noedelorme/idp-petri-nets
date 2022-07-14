@@ -59,8 +59,89 @@ print("--------------------------")
 
 sep.print()
 
-# ans = checkLocallyClosedBiSeparator(net, sep, net.marking, m)
-# print(ans)
+ans = checkLocallyClosedBiSeparator(net, sep, net.marking, m)
+print(ans)
+
+
+
+trans = [None, None, None, None]
+for t in net.transitions:
+    trans[t.id] = t
+t1 = trans[0]
+t2 = trans[1]
+t3 = trans[2]
+t4 = trans[3]
+
+
+# c1 = sep.clauses[0]
+# c2 = sep.clauses[1]
+# c3 = sep.clauses[2]
+
+# a11 = c1.atoms[0]
+# a21 = c2.atoms[0]
+# a22 = c2.atoms[1]
+# a31 = c3.atoms[0]
+# a32 = c3.atoms[1]
+# a33 = c3.atoms[2]
+
+# print("=============")
+# print(atomicImplication(net, a31, a31, t1))
+# print(atomicImplication(net, a31, a32, t1))
+# print(atomicImplication(net, a31, a33, t1))
+# print("=============")
+# print(atomicImplication(net, a32, a31, t1))
+# print(atomicImplication(net, a32, a32, t1))
+# print(atomicImplication(net, a32, a33, t1))
+# print("=============")
+# print(atomicImplication(net, a33, a31, t1))
+# print(atomicImplication(net, a33, a32, t1))
+# print(atomicImplication(net, a33, a33, t1))
+
+
+# relations = [
+#     (c3,c1,t4),(c3,c2,t4),(c3,c3,t4),
+# ]
+
+# # Def of clause c t-implies clause cp according to the big formula
+# print("=============")
+# for (c,cp,t) in relations:
+#     flag_i = True
+#     for atom_i in c.atoms:
+#         flag_j = False
+#         for atom_j in cp.atoms:
+#             if atomicImplication(net, atom_i, atom_j, t):
+#                 flag_j = True
+#                 break
+#         flag_i &= flag_j
+#     print(flag_i)
+
+# Def of clause c t-implies clause cp according to 4.1
+# print("=============")
+# for (c,cp,t) in relations:
+#     flag_j = True
+#     for atom_j in cp.atoms:
+#         flag_i = False
+#         for atom_i in c.atoms:
+#             if atomicImplication(net, atom_i, atom_j, t):
+#                 flag_i = True
+#                 break
+#         flag_j &= flag_i
+#     print(flag_j)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 c1 = Clause([Atom(np.array([0,0,0,1]), np.array([0,0,0,1]), True)])
@@ -69,20 +150,15 @@ c3 = Clause([Atom(np.array([0,0,0,1]), np.array([0,0,0,1])), Atom(np.array([0,0,
 c4 = Clause([Atom(np.array([0,0,0,1]), np.array([0,0,0,1])), Atom(np.array([1,1,0,0]), np.array([0,0,0,0])), Atom(np.array([0,0,-1,0]), np.array([0,0,-1,0]))])
 form = Formula([c1,c2,c3,c4])
 
-ans = checkLocallyClosedBiSeparator(net, form, net.marking, m)
-print(ans)
+# ans = checkLocallyClosedBiSeparator(net, form, net.marking, m)
+# print(ans)
 
-t1 = list(net.places[0].postset)[0]
-t2 = list(net.places[0].postset)[2]
-t3 = list(net.places[0].postset)[1]
-t4 = list(net.places[2].postset)[0]
-
-a44s = Atom(np.array([0,0,0,1]), np.array([0,0,0,1]), True)
-a44 = Atom(np.array([0,0,0,1]), np.array([0,0,0,1]))
-am44s = Atom(np.array([0,0,0,-1]), np.array([0,0,0,1]), True)
-a12ps = Atom(np.array([0,0,0,0]), np.array([1,1,0,0]), True)
-a12 = Atom(np.array([1,1,0,0]), np.array([0,0,0,0]))
-am3m3p = Atom(np.array([0,0,-1,0]), np.array([0,0,-1,0]))
+# a44s = Atom(np.array([0,0,0,1]), np.array([0,0,0,1]), True)
+# a44 = Atom(np.array([0,0,0,1]), np.array([0,0,0,1]))
+# am44s = Atom(np.array([0,0,0,-1]), np.array([0,0,0,1]), True)
+# a12ps = Atom(np.array([0,0,0,0]), np.array([1,1,0,0]), True)
+# a12 = Atom(np.array([1,1,0,0]), np.array([0,0,0,0]))
+# am3m3p = Atom(np.array([0,0,-1,0]), np.array([0,0,-1,0]))
 
 # print("=============")
 # print(atomicImplication(net, a44, a44, t3))
@@ -97,7 +173,6 @@ am3m3p = Atom(np.array([0,0,-1,0]), np.array([0,0,-1,0]))
 # print(atomicImplication(net, a12, am3m3p, t3))
 # print(atomicImplication(net, am3m3p, am3m3p, t3))
 
-
 relations = [
     (c1,c1,t1),(c1,c1,t2),(c1,c1,t3),(c1,c1,t4),
     (c2,c1,t4),(c2,c2,t1),(c2,c2,t2),(c2,c2,t3),
@@ -105,6 +180,7 @@ relations = [
     (c4,c1,t4),(c4,c2,t2),(c4,c4,t1),(c4,c4,t3)
 ]
 
+# Def of clause c t-implies clause cp according to the big formula
 print("=============")
 for (c,cp,t) in relations:
     flag_i = True
@@ -117,211 +193,15 @@ for (c,cp,t) in relations:
         flag_i &= flag_j
     print(flag_i)
 
-# result = True
-# c = c1
-# cp = c1
-# t = t1
-# for aj in cp.atoms:
-#     flag = False
-#     for ai in c.atoms:
-#         if atomicImplication(net, ai, aj, t):
-#             flag = True
-#             break
-#     result &= flag
-# print(result)
-
-# result = True
-# c = c1
-# cp = c1
-# t = t2
-# for aj in cp.atoms:
-#     flag = False
-#     for ai in c.atoms:
-#         if atomicImplication(net, ai, aj, t):
-#             flag = True
-#             break
-#     result &= flag
-# print(result)
-
-# result = True
-# c = c1
-# cp = c1
-# t = t3
-# for aj in cp.atoms:
-#     flag = False
-#     for ai in c.atoms:
-#         if atomicImplication(net, ai, aj, t):
-#             flag = True
-#             break
-#     result &= flag
-# print(result)
-
-# result = True
-# c = c1
-# cp = c1
-# t = t4
-# for aj in cp.atoms:
-#     flag = False
-#     for ai in c.atoms:
-#         if atomicImplication(net, ai, aj, t):
-#             flag = True
-#             break
-#     result &= flag
-# print(result)
-
-
-# result = True
-# c = c2
-# cp = c1
-# t = t4
-# for aj in cp.atoms:
-#     flag = False
-#     for ai in c.atoms:
-#         if atomicImplication(net, ai, aj, t):
-#             flag = True
-#             break
-#     result &= flag
-# print(result)
-
-# result = True
-# c = c2
-# cp = c2
-# t = t1
-# for aj in cp.atoms:
-#     flag = False
-#     for ai in c.atoms:
-#         if atomicImplication(net, ai, aj, t):
-#             flag = True
-#             break
-#     result &= flag
-# print(result)
-
-# result = True
-# c = c2
-# cp = c2
-# t = t2
-# for aj in cp.atoms:
-#     flag = False
-#     for ai in c.atoms:
-#         if atomicImplication(net, ai, aj, t):
-#             flag = True
-#             break
-#     result &= flag
-# print(result)
-
-# result = True
-# c = c2
-# cp = c2
-# t = t3
-# for aj in cp.atoms:
-#     flag = False
-#     for ai in c.atoms:
-#         if atomicImplication(net, ai, aj, t):
-#             flag = True
-#             break
-#     result &= flag
-# print(result)
-
-# result = True
-# c = c3
-# cp = c1
-# t = t4
-# for aj in cp.atoms:
-#     flag = False
-#     for ai in c.atoms:
-#         if atomicImplication(net, ai, aj, t):
-#             flag = True
-#             break
-#     result &= flag
-# print(result)
-
-# result = True
-# c = c3
-# cp = c2
-# t = t2
-# for aj in cp.atoms:
-#     flag = False
-#     for ai in c.atoms:
-#         if atomicImplication(net, ai, aj, t):
-#             flag = True
-#             break
-#     result &= flag
-# print(result)
-
-# result = True
-# c = c3
-# cp = c3
-# t = t1
-# for aj in cp.atoms:
-#     flag = False
-#     for ai in c.atoms:
-#         if atomicImplication(net, ai, aj, t):
-#             flag = True
-#             break
-#     result &= flag
-# print(result)
-
-# result = True
-# c = c3
-# cp = c3
-# t = t3
-# for aj in cp.atoms:
-#     flag = False
-#     for ai in c.atoms:
-#         if atomicImplication(net, ai, aj, t):
-#             flag = True
-#             break
-#     result &= flag
-# print(result)
-
-# result = True
-# c = c4
-# cp = c1
-# t = t4
-# for aj in cp.atoms:
-#     flag = False
-#     for ai in c.atoms:
-#         if atomicImplication(net, ai, aj, t):
-#             flag = True
-#             break
-#     result &= flag
-# print(result)
-
-# result = True
-# c = c4
-# cp = c2
-# t = t2
-# for aj in cp.atoms:
-#     flag = False
-#     for ai in c.atoms:
-#         if atomicImplication(net, ai, aj, t):
-#             flag = True
-#             break
-#     result &= flag
-# print(result)
-
-# result = True
-# c = c4
-# cp = c4
-# t = t1
-# for aj in cp.atoms:
-#     flag = False
-#     for ai in c.atoms:
-#         if atomicImplication(net, ai, aj, t):
-#             flag = True
-#             break
-#     result &= flag
-# print(result)
-
-# result = True
-# c = c4
-# cp = c4
-# t = t3
-# for aj in cp.atoms:
-#     flag = False
-#     for ai in c.atoms:
-#         if atomicImplication(net, ai, aj, t):
-#             flag = True
-#             break
-#     result &= flag
-# print(result)
+# # Def of clause c t-implies clause cp according to 4.1
+# print("=============")
+# for (c,cp,t) in relations:
+#     flag_j = True
+#     for atom_j in cp.atoms:
+#         flag_i = False
+#         for atom_i in c.atoms:
+#             if atomicImplication(net, atom_i, atom_j, t):
+#                 flag_i = True
+#                 break
+#         flag_j &= flag_i
+#     print(flag_j)

@@ -202,6 +202,27 @@ def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
 
 
 def atomicImplication(net: Net, psi: Atom, psip: Atom, t: Transition, inv=False):
+    # Return True if X empty
+    if psi.strict:
+        check = not all(psi.a>=0) and not all(psi.ap<=0)
+        if not check:
+            return True
+    else:
+        flag = False
+        for u in net.transitions:
+            delta_u_minus = net.tVectorMinus(u)
+            ap_dot_delta_u_minus = np.dot(psi.ap, delta_u_minus)
+            check = ap_dot_delta_u_minus>=0
+            check |= ap_dot_delta_u_minus<0 and not all(psi.a>=0) and not all(-psi.ap>=0)
+            if check:
+                flag = True
+                break
+        if not flag:
+            return True
+    
+    # print("X not empty")
+
+    # If X not empty
     a,ap,minus_bp,l = None,None,None,None
     if not inv:
         a = np.concatenate((psi.a, -psi.ap))
@@ -228,6 +249,9 @@ def atomicImplication(net: Net, psi: Atom, psip: Atom, t: Transition, inv=False)
         s.add(product>minus_bp)
     else:
         s.add(Or(product>minus_bp, And(product==minus_bp, lamb>0)))
+    
+    # print(s)
+    
     return s.check()==sat
 
 

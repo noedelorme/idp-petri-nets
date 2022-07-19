@@ -41,7 +41,7 @@ def isFireable(net: Net, Tp, m, inv=False):
 
 
 
-def isReachable(net: Net, m):
+def isReachable(net: Net, m, log=False):
     """
     Decision algorithm for reachability
 
@@ -57,7 +57,10 @@ def isReachable(net: Net, m):
     
     Tp = net.transitions.copy()
 
+    count_while = 0
     while len(Tp)>0:
+        count_while += 1
+
         nbsol = 0
         sol = np.zeros(net.t)
 
@@ -70,10 +73,16 @@ def isReachable(net: Net, m):
         matrixCstrt = [CDotv[i] == mMinusm0[i] for i in range(net.p)]
         s.add(positiveCstrt+matrixCstrt)
 
-        count = 0
+        count_for = 0
+        avancement = 0
+        avancement_old = 0
+        if log: print(">Step "+ str(count_while))
         for t in Tp:
-            count += 1
-            print(str(round(count/len(Tp)*100, 2))+"%")
+            count_for += 1
+            avancement = int(count_for/len(Tp)*100)
+            if log and (avancement-avancement_old>=5 or avancement<=avancement_old):
+                print(str(avancement)+"%")
+                avancement_old = avancement
 
             s.push()
             s.add(v[t.id]>0)
@@ -110,7 +119,7 @@ def isReachable(net: Net, m):
 
 
 
-def isCoverable(net: Net, m):
+def isCoverable(net: Net, m, log=False):
     """
     Decision algorithm for coverability
 
@@ -126,7 +135,10 @@ def isCoverable(net: Net, m):
     
     Tp = net.transitions.copy()
 
+    count_while = 0
     while len(Tp)>0:
+        count_while += 1
+
         nbsol = 0
         solv = np.zeros(net.t)
         solw = np.zeros(net.p)
@@ -142,10 +154,16 @@ def isCoverable(net: Net, m):
         matrixCstrt = [CDotv[i]-w[i] == mMinusm0[i] for i in range(net.p)]
         s.add(positiveCstrtV+positiveCstrtW+matrixCstrt)
 
-        count = 0
+        count_for = 0
+        avancement = 0
+        avancement_old = 0
+        if log: print(">Step "+ str(count_while))
         for t in Tp:
-            count += 1
-            print("first step: "+str(round(count/len(Tp)*100, 2))+"%")
+            count_for += 1
+            avancement = int(count_for/len(Tp)*100)
+            if log and (avancement-avancement_old>=5 or avancement<=avancement_old):
+                print(str(avancement)+"%")
+                avancement_old = avancement
 
             s.push()
             s.add(v[t.id]>0)

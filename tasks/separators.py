@@ -52,7 +52,6 @@ def largestSiphon(net: Net, Up, msrc):
     return vectQ
 
 
-
 def largestTrap(net: Net, Up, mtgt):
     """
     Find the largest trap R of N_Up such that mtgt(R)=0.
@@ -94,7 +93,6 @@ def largestTrap(net: Net, Up, mtgt):
             if breakFirstLoop: break
     
     return vectR
-
 
 
 def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
@@ -200,7 +198,6 @@ def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
         return bisep
 
 
-
 def atomicImplication(net: Net, psi: Atom, psip: Atom, t: Transition, inv=False):
     # Return True if X empty
     if psi.strict:
@@ -220,8 +217,6 @@ def atomicImplication(net: Net, psi: Atom, psip: Atom, t: Transition, inv=False)
         if not flag:
             return True
     
-    # print("X not empty")
-
     # If X not empty
     a,ap,minus_bp,l = None,None,None,None
     if not inv:
@@ -250,53 +245,41 @@ def atomicImplication(net: Net, psi: Atom, psip: Atom, t: Transition, inv=False)
     else:
         s.add(Or(product>minus_bp, And(product==minus_bp, lamb>0)))
     
-    # print(s)
-    
     return s.check()==sat
 
 
+def clauseImplication(net: Net, phi: Clause, phip: Clause, t: Transition, inv=False):
+    flag_j = True
+    for phip_j in phip.atoms:
+        flag_i = False
+        for phi_i in phi.atoms:
+            if atomicImplication(net, phi_i, phip_j, t, inv):
+                flag_i = True
+                break
+        flag_j &= flag_i
+    return flag_j
+
 
 def checkLocallyClosedBiSeparator(net: Net, phi: Formula, msrc, mtgt):
+    if not phi.check(msrc, msrc) or not phi.check(mtgt, mtgt) or phi.check(msrc, mtgt):
+        return False
+
     for t in net.transitions:
-        for clause_i in phi.clauses:
-            flag_clause_i = False
-            for clause_j in phi.clauses:
-                flag_clause_j = True
-                for psi in clause_i.atoms:
-                    flag_psi = False
-                    for psip in clause_j.atoms:
-                        if atomicImplication(net, psi, psip, t):
-                            flag_psi = True
-                            break
-                    if not flag_psi:
-                        flag_clause_j = False
-                        break
-                if flag_clause_j:
-                    flag_clause_i = True
+        for phi_i in phi.clauses:
+            flag = False
+            for phi_j in phi.clauses:
+                if clauseImplication(net, phi_i, phi_j, t):
+                    flag = True
                     break
-            if not flag_clause_i:
-                answer = False
-                return answer
-    print("test")
+            if not flag: return False
+
     for t in net.transitions:
-        for clause_i in phi.clauses:
-            flag_clause_i = False
-            for clause_j in phi.clauses:
-                flag_clause_j = True
-                for psi in clause_i.atoms:
-                    flag_psi = False
-                    for psip in clause_j.atoms:
-                        if atomicImplication(net, psi, psip, t, inv=True):
-                            flag_psi = True
-                            break
-                    if not flag_psi:
-                        flag_clause_j = False
-                        break
-                if flag_clause_j:
-                    flag_clause_i = True
+        for phi_i in phi.clauses:
+            flag = False
+            for phi_j in phi.clauses:
+                if clauseImplication(net, phi_i, phi_j, t, True):
+                    flag = True
                     break
-            if not flag_clause_i:
-                answer = False
-                return answer
+            if not flag: return False
     
     return True

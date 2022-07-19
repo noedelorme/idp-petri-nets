@@ -86,10 +86,11 @@ class Formula:
                 print("OR")
     
     def getSize(self):
-        text = "[" + str(self.size) + "]"
+        text = str(self.size) + "("
         for clause in self.clauses:
             text += str(clause.size) + ","
-        return text[:-1]
+        text = text[:-1] + ")"
+        return text
     
     def addClause(self, clause):
         self.clauses.append(clause)

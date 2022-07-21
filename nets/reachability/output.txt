@@ -1,23 +1,26 @@
-mine-1.lola
-mine-1.formula True
+homemade/mine-1.lola
+homemade/mine-1.formula True
 
-mine-2.lola
-mine-2.formula True
+homemade/mine-2.lola
+homemade/mine-2.formula True
 
-mine-3.lola
-mine-3-1.formula True
-mine-3-2.formula True
-mine-3-3.formula True
-mine-3-4.formula False
-mine-3-5.formula False
+homemade/mine-3.lola
+homemade/mine-3-1.formula True
+homemade/mine-3-2.formula True
+homemade/mine-3-3.formula True
+homemade/mine-3-4.formula False
+homemade/mine-3-5.formula False
 
-mine-4.lola
-mine-4-1.formula True
-mine-4-2.formula True
-mine-4-3.formula True
+homemade/mine-4.lola
+homemade/mine-4-1.formula True
+homemade/mine-4-2.formula True
+homemade/mine-4-3.formula True
 
-figure-1a-haddad.lola
-figure-1a-haddad.formula False
+homemade/figure-1a-haddad.lola
+homemade/figure-1a-haddad.formula False
 
-figure-1-esparza.lola
-figure-1-esparza.formula False
+homemade/figure-1-esparza.lola
+homemade/figure-1-esparza.formula False
+
+random-walk/Boop_simple_vf_satabs.2_multi_100_0.lola
+random-walk/Boop_simple_vf_satabs.2_multi_100_0.formula True

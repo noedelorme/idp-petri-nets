@@ -80,7 +80,7 @@ def isReachable(net: Net, m, log=False):
         for t in Tp:
             count_for += 1
             avancement = int(count_for/len(Tp)*100)
-            if log and (avancement-avancement_old>=5 or avancement<=avancement_old):
+            if log and (avancement-avancement_old>=5):
                 print(str(avancement)+"%")
                 avancement_old = avancement
 
@@ -161,7 +161,7 @@ def isCoverable(net: Net, m, log=False):
         for t in Tp:
             count_for += 1
             avancement = int(count_for/len(Tp)*100)
-            if log and (avancement-avancement_old>=5 or avancement<=avancement_old):
+            if log and (avancement-avancement_old>=5):
                 print(str(avancement)+"%")
                 avancement_old = avancement
 

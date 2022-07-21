@@ -48,7 +48,7 @@ def largestSiphon(net: Net, Up, msrc):
                         breakFirstLoop = True
                         break
             if breakFirstLoop: break
-    
+
     return vectQ
 
 
@@ -263,7 +263,7 @@ def clauseImplication(net: Net, phi: Clause, phip: Clause, t: Transition, inv=Fa
 def checkLocallyClosedBiSeparator(net: Net, phi: Formula, msrc, mtgt):
     if not phi.check(msrc, msrc) or not phi.check(mtgt, mtgt) or phi.check(msrc, mtgt):
         return False
-
+    
     for t in net.transitions:
         for phi_i in phi.clauses:
             flag = False

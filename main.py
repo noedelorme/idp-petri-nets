@@ -10,50 +10,50 @@ from tasks.reachability import *
 from tasks.separators import *
 
 
-# path = "./nets/reachability/homemade/bad-case-5"
+# path = "./nets/reachability/homemade/bad-case-1"
 # net = createNet(path+".lola")
 # m = createMarking(net, path+".formula")
 # start = time.time()
-# answer = isReachable(net, m, log=True)
+# answer = isReachable(net, m, log=False)
 # stop = time.time()
 # print("--------------------------")
 # print("Petri net:", path)
 # print("Number of places:", net.p)
 # print("Number of transitions:", net.t)
 # print("Reachability output:", answer)
-# print("Time elapsed:", stop-start)
+# print("Check time:", stop-start)
 # print("--------------------------")
 
 
-# path = "./nets/coverability/mist-pn/kanban"
-# net = createNet(path+".lola")
-# m = createMarking(net, path+".formula")
-# start = time.time()
-# answer = isCoverable(net, m, log=True)
-# stop = time.time()
-# print("--------------------------")
-# print("Petri net:", path)
-# print("Number of places:", net.p)
-# print("Number of transitions:", net.t)
-# print("Coverability output:", answer)
-# print("Time elapsed:", stop-start)
-# print("--------------------------")
-
-
-path = "./nets/reachability/homemade/figure-1-esparza"
+path = "./nets/reachability/homemade/bad-case-1"
 net = createNet(path+".lola")
 m = createMarking(net, path+".formula")
 start = time.time()
 sep = generateLocallyClosedBiSeparator(net, net.transitions, net.marking, m)
+step = time.time()
+check = checkLocallyClosedBiSeparator(net, sep, net.marking, m)
 stop = time.time()
 print("--------------------------")
 print("Petri net:", path)
 print("Number of places:", net.p)
 print("Number of transitions:", net.t)
 print("Separator size:", sep.getSize())
-print("Check:", checkLocallyClosedBiSeparator(net, sep, net.marking, m))
-print("Time elapsed:", stop-start)
+print("Check:", check)
+print("Generation time:", step-start)
+print("Check time:", stop-step)
 print("--------------------------")
+
+sep.print()
+
+
+
+t = list(net.transitions)[0]
+print(t)
+
+print(clauseImplication(net, sep.clauses[3], sep.clauses[0], t))
+print(clauseImplication(net, sep.clauses[3], sep.clauses[1], t))
+print(clauseImplication(net, sep.clauses[3], sep.clauses[2], t))
+print(clauseImplication(net, sep.clauses[3], sep.clauses[3], t))
 
 
 # # Separator from Example 2 of [1]

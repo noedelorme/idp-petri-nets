@@ -222,12 +222,12 @@ def atomicImplication(net: Net, psi: Atom, psip: Atom, t: Transition, inv=False)
     if not inv:
         a = np.concatenate((psi.a, -psi.ap))
         ap = np.concatenate((psip.a, -psip.ap))
-        minus_bp = np.dot(a, np.concatenate((np.zeros(net.p), net.tVector(t))))
+        minus_bp = np.dot(ap, np.concatenate((np.zeros(net.p), net.tVector(t))))
         l = np.concatenate((np.zeros(net.p), net.tVectorMinus(t)))
     else:
         a = np.concatenate((-psi.ap, psi.a))
         ap = np.concatenate((-psip.ap, psip.a))
-        minus_bp = np.dot(a, np.concatenate((np.zeros(net.p), -net.tVector(t))))
+        minus_bp = np.dot(ap, np.concatenate((np.zeros(net.p), -net.tVector(t))))
         l = np.concatenate((np.zeros(net.p), net.tVectorPlus(t)))
 
     s = Solver()
@@ -261,6 +261,19 @@ def clauseImplication(net: Net, phi: Clause, phip: Clause, t: Transition, inv=Fa
 
 
 def checkLocallyClosedBiSeparator(net: Net, phi: Formula, msrc, mtgt):
+    """
+    Check in a given formula is a locally closed bi-separator for (msrc,mtgt).
+
+    Args:
+        net: the Petri net
+        phi: the formula
+        msrc: the source marking
+        mtgt: the target marking
+
+    Return:
+        bool: True iff phi is a locally closed bi-separator for (msrc,mtgt)
+    """
+
     if not phi.check(msrc, msrc) or not phi.check(mtgt, mtgt) or phi.check(msrc, mtgt):
         return False
     
@@ -282,4 +295,27 @@ def checkLocallyClosedBiSeparator(net: Net, phi: Formula, msrc, mtgt):
                     break
             if not flag: return False
     
+    return True
+
+def checkLocallyClosedBiSeparatorWithSyndrome(net: Net, phi: Formula, msrc, mtgt):
+    """
+    Check in a given formula is a locally closed bi-separator for (msrc,mtgt), 
+    using the syndrome computed during generateLocallyClosedBiSeparator.
+
+    Args:
+        net: the Petri net
+        phi: the formula
+        syndrom: syndrome of generateLocallyClosedBiSeparator
+        msrc: the source marking
+        mtgt: the target marking
+
+    Return:
+        bool: True iff phi is a locally closed bi-separator for (msrc,mtgt)
+    """
+
+    if not phi.check(msrc, msrc) or not phi.check(mtgt, mtgt) or phi.check(msrc, mtgt):
+        return False
+    
+    
+
     return True

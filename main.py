@@ -25,7 +25,7 @@ from tasks.separators import *
 # print("--------------------------")
 
 
-path = "./nets/reachability/homemade/bad-case-1"
+path = "./nets/reachability/homemade/figure-1-esparza"
 net = createNet(path+".lola")
 m = createMarking(net, path+".formula")
 start = time.time()
@@ -43,17 +43,21 @@ print("Generation time:", step-start)
 print("Check time:", stop-step)
 print("--------------------------")
 
-sep.print()
+
+c1 = Clause([Atom(np.array([0,1,0,1]), np.array([0,-0.4,0,1]))])
+c2 = Clause([Atom(np.array([0,0,1,1]), np.array([2,0,0,1]), True)])
+form = Formula([c1,c2])
+ans = checkLocallyClosedBiSeparator(net, form, net.marking, m)
+print(ans)
 
 
 
-t = list(net.transitions)[0]
-print(t)
-
-print(clauseImplication(net, sep.clauses[3], sep.clauses[0], t))
-print(clauseImplication(net, sep.clauses[3], sep.clauses[1], t))
-print(clauseImplication(net, sep.clauses[3], sep.clauses[2], t))
-print(clauseImplication(net, sep.clauses[3], sep.clauses[3], t))
+# t = list(net.transitions)[0]
+# print(t)
+# print(clauseImplication(net, sep.clauses[3], sep.clauses[0], t))
+# print(clauseImplication(net, sep.clauses[3], sep.clauses[1], t))
+# print(clauseImplication(net, sep.clauses[3], sep.clauses[2], t))
+# print(clauseImplication(net, sep.clauses[3], sep.clauses[3], t))
 
 
 # # Separator from Example 2 of [1]

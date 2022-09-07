@@ -44,6 +44,8 @@ class Clause:
     def __init__(self, atoms):
         self.size = len(atoms)
         self.atoms = atoms
+        self.syndrome = dict()
+        self.syndromeId = None
     
     def __repr__(self):
         text = ""

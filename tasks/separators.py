@@ -4,7 +4,6 @@ from scipy.sparse import csr_matrix
 import time
 from z3 import *
 from tasks.utilities import *
-from objects.Net import Net
 from objects.Net import Net, Transition, Place
 from objects.Formula import Formula, Clause, Atom
 
@@ -109,8 +108,7 @@ def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
     Return:
         bisep: a bi-separator for (msrc,mtgt)
     """
-    # print("--------------Recursive call, len(U)=:", len(U))
-
+    # Case U empty
     if len(U)==0:
         p = 0
         while msrc[p]==mtgt[p] and p<net.p:
@@ -119,11 +117,14 @@ def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
         a = np.zeros(net.p)
         a[p] = copysign(1,msrc[p]-mtgt[p])
 
-        return Formula([Clause([Atom(a, a)])])
+        clause = Clause([Atom(a, a)])
+        for t in net.transitions:
+            clause.syndrome[t.name] = clause
+        return Formula([clause])
     
-    b = mtgt - msrc
-
+    # X solver initialization
     X = Solver()
+    b = mtgt - msrc
     x = np.array([Real("x%i" % i) for i in range(net.t)])
     positiveCstrt = [x[i]>=0 for i in range(net.t)]
     F = net.incidenceMatrix(net.transitions)
@@ -135,6 +136,7 @@ def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
     inclusionCstrt = [simplify(Or(x[i]==0, bool(vectU[i]>0))) for i in range(net.t)]
     X.add(inclusionCstrt)
 
+    # Y solver initialization
     Y = Solver()
     y = np.array([Real("y%i" % i) for i in range(net.p)])
     FT = csr_matrix(F.transpose())
@@ -144,13 +146,19 @@ def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
     bTDoty = b.dot(y)
     Y.add(bTDoty <= 0)
 
+    # Case X empty
     if X.check() == unsat:
         Y.push()
         Y.add(bTDoty < 0)
         assert Y.check()==sat, "Error: Y_empty has no solution"
         yempty = modelToFloat(Y.model(),y)
         Y.pop()
-        return Formula([Clause([Atom(yempty, yempty)])])
+        clause = Clause([Atom(yempty, yempty)])
+        for t in net.transitions:
+            clause.syndrome[t.name] = clause
+        return Formula([clause])
+
+    #Case X none empty
     else:
         Up = set()
         for u in U:
@@ -160,7 +168,9 @@ def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
                 Up.add(u)
             X.pop()
         
+        # Compute case 1 clauses
         clauses_case1 = []
+        clauses_Cu_UDiffUp = dict()
         phi_inv = []
         UDiffUp = U.difference(Up)
         for t in UDiffUp:
@@ -171,10 +181,14 @@ def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
             Y.pop()
             phi_inv.append(Atom(yt, yt))
             clause = Clause([Atom(yt, yt, strict=True)])
+            for u in net.transitions:
+                clause.syndrome[u.name] = clause
             clauses_case1.append(clause)
+            clauses_Cu_UDiffUp[t.name] = clause
             if np.dot(yt,msrc)>np.dot(yt,mtgt):
                 return Formula([clause])
 
+        # Compute largest siphon and trap
         vectQ = largestSiphon(net, Up, msrc)
         Q = placeVectorToSet(net, vectQ)
         Qo = placeSetPostset(net, Q)
@@ -182,20 +196,52 @@ def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
         R = placeVectorToSet(net, vectR)
         oR = placeSetPreset(net, R)
         
+        # Compute recursive call
         QoUoR = Qo.union(oR)
         UpDiffQoUoR = Up.difference(QoUoR)
         psi = generateLocallyClosedBiSeparator(net, UpDiffQoUoR, msrc, mtgt)
 
-        case2 = Clause(phi_inv+[Atom(-vectQ, vectR, strict=True)])
+        # Compute case 2 clause
+        clause2 = Clause(phi_inv+[Atom(-vectQ, vectR, strict=True)])
+        clauses_case2 = [clause2]
+
+        # Compute case 3 clauses
+        for i in range(len(psi.clauses)):
+            psi.clauses[i].syndromeId = i
 
         clauses_case3 = []
         atomSiphonTrap = Atom(vectR, -vectQ)
         for clause in psi.clauses:
+            clause3 = Clause(phi_inv+[atomSiphonTrap]+clause.atoms)
+            clause3.syndromeId = clause.syndromeId
             clauses_case3.append(Clause(phi_inv+[atomSiphonTrap]+clause.atoms))
+        
 
-        clauses = clauses_case1 + [case2] + clauses_case3
+        # Syndrom assignement
+        for u in UDiffUp:
+            clause2.syndrome[u.name] = clauses_Cu_UDiffUp[u.name]
+            for clause3 in clauses_case3:
+                clause3.syndrome[u.name] = clauses_Cu_UDiffUp[u.name]
+        for u in Up:
+            if u in oR:
+                clause2.syndrome[u.name] = clause2
+                for clause3 in clauses_case3:
+                    clause3.syndrome[u.name] = clause2
+            elif u in Qo:
+                clause2.syndrome[u.name] = clause2
+                for clause3 in clauses_case3:
+                    clause3.syndrome[u.name] = clause2
+            else:
+                clause2.syndrome[u.name] = clause2
+                for clause in psi.clauses:
+                    clauses_case3[clause.syndromeId].syndrome[u.name] = clauses_case3[clause.syndrome[u.name].syndromeId]
+
+        # Formula concatenation
+        clauses = clauses_case1 + clauses_case2 + clauses_case3
         bisep = Formula(clauses)
         return bisep
+
+
 
 
 def atomicImplication(net: Net, psi: Atom, psip: Atom, t: Transition, inv=False):
@@ -305,7 +351,6 @@ def checkLocallyClosedBiSeparatorWithSyndrome(net: Net, phi: Formula, msrc, mtgt
     Args:
         net: the Petri net
         phi: the formula
-        syndrom: syndrome of generateLocallyClosedBiSeparator
         msrc: the source marking
         mtgt: the target marking
 
@@ -316,6 +361,15 @@ def checkLocallyClosedBiSeparatorWithSyndrome(net: Net, phi: Formula, msrc, mtgt
     if not phi.check(msrc, msrc) or not phi.check(mtgt, mtgt) or phi.check(msrc, mtgt):
         return False
     
+    for t in net.transitions:
+        for clause in phi.clauses:
+            if not clauseImplication(net, clause, clause.syndrome[t.name], t):
+                return False
+
+    for t in net.transitions:
+        for clause in phi.clauses:
+            if not clauseImplication(net, clause, clause.syndrome[t.name], t, True):
+                return False
     
 
     return True

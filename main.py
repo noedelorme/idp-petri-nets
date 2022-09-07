@@ -10,57 +10,66 @@ from tasks.reachability import *
 from tasks.separators import *
 
 
-# path = "./nets/reachability/homemade/bad-case-1"
-# net = createNet(path+".lola")
-# m = createMarking(net, path+".formula")
-# start = time.time()
-# answer = isReachable(net, m, log=False)
-# stop = time.time()
-# print("--------------------------")
-# print("Petri net:", path)
-# print("Number of places:", net.p)
-# print("Number of transitions:", net.t)
-# print("Reachability output:", answer)
-# print("Check time:", stop-start)
-# print("--------------------------")
+def runReachability(path):
+    net = createNet(path+".lola")
+    m = createMarking(net, path+".formula")
+    start = time.time()
+    answer = isReachable(net, m, log=False)
+    stop = time.time()
+    print("--------------------------")
+    print("Petri net:", path)
+    print("Number of places:", net.p)
+    print("Number of transitions:", net.t)
+    print("Reachability output:", answer)
+    print("Check time:", stop-start)
+    print("--------------------------")
 
 
-path = "./nets/reachability/homemade/figure-1-esparza"
-net = createNet(path+".lola")
-m = createMarking(net, path+".formula")
-start = time.time()
-sep = generateLocallyClosedBiSeparator(net, net.transitions, net.marking, m)
-step = time.time()
-check = checkLocallyClosedBiSeparator(net, sep, net.marking, m)
-stop = time.time()
-print("--------------------------")
-print("Petri net:", path)
-print("Number of places:", net.p)
-print("Number of transitions:", net.t)
-print("Separator size:", sep.getSize())
-print("Check:", check)
-print("Generation time:", step-start)
-print("Check time:", stop-step)
-print("--------------------------")
+def runSeparator(path):
+    net = createNet(path+".lola")
+    m = createMarking(net, path+".formula")
+    start = time.time()
+    sep = generateLocallyClosedBiSeparator(net, net.transitions, net.marking, m)
+    step1 = time.time()
+    check1 = checkLocallyClosedBiSeparator(net, sep, net.marking, m)
+    step2 = time.time()
+    check2 = checkLocallyClosedBiSeparatorWithSyndrome(net, sep, net.marking, m)
+    stop = time.time()
+    print("--------------------------")
+    print("Petri net:", path)
+    print("Number of places:", net.p)
+    print("Number of transitions:", net.t)
+    print("Separator size:", sep.getSize())
+    print("Standard check:", check1)
+    print("Syndrome check:", check2)
+    print("Generation time:", step1-start)
+    print("Standrad check time:", step2-step1)
+    print("Syndrome check time:", stop-step2)
+    print("--------------------------")
 
 
-c1 = Clause([Atom(np.array([0,1,0,1]), np.array([0,-0.4,0,1]))])
-c2 = Clause([Atom(np.array([0,0,1,1]), np.array([2,0,0,1]), True)])
-form = Formula([c1,c2])
-ans = checkLocallyClosedBiSeparator(net, form, net.marking, m)
-print(ans)
+# runReachability("./nets/reachability/homemade/figure-1-esparza")
+# runReachability("./nets/reachability/homemade/figure-1a-haddad")
+# runReachability("./nets/reachability/homemade/bad-case-1")
+# runReachability("./nets/reachability/homemade/bad-case-2")
+# runReachability("./nets/reachability/homemade/bad-case-5")
+
+
+runSeparator("./nets/reachability/homemade/figure-1-esparza")
+# runSeparator("./nets/reachability/homemade/figure-1a-haddad")
+# runSeparator("./nets/reachability/homemade/bad-case-1")
+# runSeparator("./nets/reachability/homemade/bad-case-2")
+# runSeparator("./nets/reachability/homemade/bad-case-5")
 
 
 
-# t = list(net.transitions)[0]
-# print(t)
-# print(clauseImplication(net, sep.clauses[3], sep.clauses[0], t))
-# print(clauseImplication(net, sep.clauses[3], sep.clauses[1], t))
-# print(clauseImplication(net, sep.clauses[3], sep.clauses[2], t))
-# print(clauseImplication(net, sep.clauses[3], sep.clauses[3], t))
+
 
 
 # # Separator from Example 2 of [1]
+# path = "./nets/reachability/homemade/figure-1-esparza"
+# net = createNet(path+".lola")
+# m = createMarking(net, path+".formula")
 # c1 = Clause([Atom(np.array([0,0,0,1]), np.array([0,0,0,1]), True)])
 # c2 = Clause([Atom(np.array([0,0,0,1]), np.array([0,0,0,1])), Atom(np.array([0,0,0,-1]), np.array([0,0,0,1]), True)])
 # c3 = Clause([Atom(np.array([0,0,0,1]), np.array([0,0,0,1])), Atom(np.array([0,0,0,0]), np.array([1,1,0,0]), True)])

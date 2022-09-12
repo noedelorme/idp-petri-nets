@@ -8,6 +8,7 @@ from objects.Formula import Formula, Clause, Atom
 from tools.reader import *
 from tasks.reachability import *
 from tasks.separators import *
+from tasks.simplify import *
 
 
 def runReachability(path):
@@ -60,7 +61,6 @@ runSeparator("./nets/reachability/homemade/figure-1-esparza")
 # runSeparator("./nets/reachability/homemade/bad-case-1")
 # runSeparator("./nets/reachability/homemade/bad-case-2")
 # runSeparator("./nets/reachability/homemade/bad-case-5")
-
 
 
 

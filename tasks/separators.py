@@ -120,7 +120,7 @@ def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
         clause = Clause([Atom(a, a)])
         for t in net.transitions:
             clause.syndrome[t.name] = clause
-        return Formula([clause])
+        return Formula(net, [clause])
     
     # X solver initialization
     X = Solver()
@@ -156,7 +156,7 @@ def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
         clause = Clause([Atom(yempty, yempty)])
         for t in net.transitions:
             clause.syndrome[t.name] = clause
-        return Formula([clause])
+        return Formula(net, [clause])
 
     #Case X none empty
     else:
@@ -186,7 +186,7 @@ def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
             clauses_case1.append(clause)
             clauses_Cu_UDiffUp[t.name] = clause
             if np.dot(yt,msrc)>np.dot(yt,mtgt):
-                return Formula([clause])
+                return Formula(net, [clause])
 
         # Compute largest siphon and trap
         vectQ = largestSiphon(net, Up, msrc)
@@ -238,7 +238,7 @@ def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
 
         # Formula concatenation
         clauses = clauses_case1 + clauses_case2 + clauses_case3
-        bisep = Formula(clauses)
+        bisep = Formula(net, clauses)
         return bisep
 
 

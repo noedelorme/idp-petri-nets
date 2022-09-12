@@ -77,9 +77,10 @@ class Formula:
         clauses: array of clauses
     """
 
-    def __init__(self, clauses):
+    def __init__(self, net, clauses):
         self.size = len(clauses)
         self.clauses = clauses
+        self.net = net
     
     def print(self):
         for i in range(len(self.clauses)):

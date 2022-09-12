@@ -41,11 +41,14 @@ class Clause:
         atoms: array of atoms
     """
 
-    def __init__(self, atoms):
+    def __init__(self, atoms, id):
         self.size = len(atoms)
+        self.id = id
         self.atoms = atoms
-        self.syndrome = dict()
-        self.syndromeId = None
+        self.forwardSyndrome = dict()
+        self.forwardSyndromeIH = None
+        self.backwardSyndrome = dict()
+        self.backwardSyndromeIH = None
     
     def __repr__(self):
         text = ""

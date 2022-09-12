@@ -117,9 +117,10 @@ def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
         a = np.zeros(net.p)
         a[p] = copysign(1,msrc[p]-mtgt[p])
 
-        clause = Clause([Atom(a, a)])
+        clause = Clause([Atom(a, a)], 0)
         for t in net.transitions:
-            clause.syndrome[t.name] = clause
+            clause.forwardSyndrome[t.name] = clause.id
+            clause.backwardSyndrome[t.name] = clause.id
         return Formula(net, [clause])
     
     # X solver initialization
@@ -153,9 +154,10 @@ def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
         assert Y.check()==sat, "Error: Y_empty has no solution"
         yempty = modelToFloat(Y.model(),y)
         Y.pop()
-        clause = Clause([Atom(yempty, yempty)])
+        clause = Clause([Atom(yempty, yempty)], 0)
         for t in net.transitions:
-            clause.syndrome[t.name] = clause
+            clause.forwardSyndrome[t.name] = (clause.id,[0])
+            clause.backwardSyndrome[t.name] = (clause.id,[0])
         return Formula(net, [clause])
 
     #Case X none empty
@@ -170,7 +172,9 @@ def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
         
         # Compute case 1 clauses
         clauses_case1 = []
-        clauses_Cu_UDiffUp = dict()
+        clauseId = 0 # Incrementing  clause id
+        clauses_Cu = dict() # key: transition name, value: clause id
+        atoms_phi_inv = dict() # key: transition name, value: atom index
         phi_inv = []
         UDiffUp = U.difference(Up)
         for t in UDiffUp:
@@ -179,13 +183,18 @@ def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
             assert Y.check()==sat, "Error: Y has no solution"
             yt = modelToFloat(Y.model(),y)
             Y.pop()
-            phi_inv.append(Atom(yt, yt))
-            clause = Clause([Atom(yt, yt, strict=True)])
+            atom = Atom(yt, yt)
+            phi_inv.append(atom)
+            atoms_phi_inv[t.name] = len(phi_inv)-1
+            clause = Clause([Atom(yt, yt, strict=True)], clauseId)
+            clauseId += 1
             for u in net.transitions:
-                clause.syndrome[u.name] = clause
+                clause.forwardSyndrome[u.name] = (clause.id,[0])
+                clause.backwardSyndrome[u.name] = (clause.id,[0])
+            clauses_Cu[t.name] = clause.id
             clauses_case1.append(clause)
-            clauses_Cu_UDiffUp[t.name] = clause
             if np.dot(yt,msrc)>np.dot(yt,mtgt):
+                clause.id = 0
                 return Formula(net, [clause])
 
         # Compute largest siphon and trap
@@ -202,39 +211,57 @@ def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
         psi = generateLocallyClosedBiSeparator(net, UpDiffQoUoR, msrc, mtgt)
 
         # Compute case 2 clause
-        clause2 = Clause(phi_inv+[Atom(-vectQ, vectR, strict=True)])
-        clauses_case2 = [clause2]
+        C2 = Clause(phi_inv+[Atom(-vectQ, vectR, strict=True)], clauseId)
+        clauseId += 1
+        clauses_case2 = [C2]
 
         # Compute case 3 clauses
-        for i in range(len(psi.clauses)):
-            psi.clauses[i].syndromeId = i
-
         clauses_case3 = []
         atomSiphonTrap = Atom(vectR, -vectQ)
         for clause in psi.clauses:
-            clause3 = Clause(phi_inv+[atomSiphonTrap]+clause.atoms)
-            clause3.syndromeId = clause.syndromeId
-            clauses_case3.append(Clause(phi_inv+[atomSiphonTrap]+clause.atoms))
-        
+            clause3 = Clause(phi_inv+[atomSiphonTrap]+clause.atoms, clauseId)
+            clauseId += 1
+            clause3.forwardSyndromeIH = clause.forwardSyndrome
+            clause3.backwardSyndromeIH = clause.backwardSyndrome
+            clauses_case3.append(clause3)
 
-        # Syndrom assignement
+        # Syndrome assignement for C2
         for u in UDiffUp:
-            clause2.syndrome[u.name] = clauses_Cu_UDiffUp[u.name]
-            for clause3 in clauses_case3:
-                clause3.syndrome[u.name] = clauses_Cu_UDiffUp[u.name]
+            C2.forwardSyndrome[u.name] = (clauses_Cu[u.name],[atoms_phi_inv[u.name]])
+            C2.backwardSyndrome[u.name] = (clauses_Cu[u.name],[atoms_phi_inv[u.name]])
         for u in Up:
-            if u in oR:
-                clause2.syndrome[u.name] = clause2
-                for clause3 in clauses_case3:
-                    clause3.syndrome[u.name] = clause2
-            elif u in Qo:
-                clause2.syndrome[u.name] = clause2
-                for clause3 in clauses_case3:
-                    clause3.syndrome[u.name] = clause2
-            else:
-                clause2.syndrome[u.name] = clause2
-                for clause in psi.clauses:
-                    clauses_case3[clause.syndromeId].syndrome[u.name] = clauses_case3[clause.syndrome[u.name].syndromeId]
+            C2.forwardSyndrome[u.name] = (C2.id,[i for i in range(C2.size)])
+            C2.backwardSyndrome[u.name] = (C2.id,[i for i in range(C2.size)])
+
+        # Forward syndrome assignement for Ci
+        for Ci in clauses_case3:
+            for u in UDiffUp:
+                Ci.forwardSyndrome[u.name] = (clauses_Cu[u.name],[atoms_phi_inv[u.name]])
+            for u in Up:
+                if u in oR:
+                    Ci.forwardSyndrome[u.name] = (C2.id,[i for i in range(C2.size)])
+                elif u in Qo:
+                    Ci.forwardSyndrome[u.name] = (C2.id,[len(phi_inv) for i in range(C2.size)])
+                else:
+                    j = Ci.forwardSyndromeIH[u.name][0]+len(clauses_case1)+1
+                    syndrome_phi_inv_theta = [i for i in range(len(phi_inv)+1)]
+                    syndrome_IH = [x+len(phi_inv)+1 for x in Ci.forwardSyndromeIH[u.name][1]]
+                    Ci.forwardSyndrome[u.name] = (j, syndrome_phi_inv_theta+syndrome_IH)
+
+        # Backward syndrome assignement for Ci
+        for Ci in clauses_case3:
+            for u in UDiffUp:
+                Ci.backwardSyndrome[u.name] = (clauses_Cu[u.name],[atoms_phi_inv[u.name]])
+            for u in Up:
+                if u in Qo:
+                    Ci.backwardSyndrome[u.name] = (C2.id,[i for i in range(C2.size)])
+                elif u in oR:
+                    Ci.backwardSyndrome[u.name] = (C2.id,[len(phi_inv) for i in range(C2.size)])
+                else:
+                    j = Ci.backwardSyndromeIH[u.name][0]+len(clauses_case1)+1
+                    syndrome_phi_inv_theta = [i for i in range(len(phi_inv)+1)]
+                    syndrome_IH = [x+len(phi_inv)+1 for x in Ci.backwardSyndromeIH[u.name][1]]
+                    Ci.backwardSyndrome[u.name] = (j, syndrome_phi_inv_theta+syndrome_IH)
 
         # Formula concatenation
         clauses = clauses_case1 + clauses_case2 + clauses_case3
@@ -251,16 +278,11 @@ def atomicImplication(net: Net, psi: Atom, psip: Atom, t: Transition, inv=False)
         if not check:
             return True
     else:
-        flag = False
-        for u in net.transitions:
-            delta_u_minus = net.tVectorMinus(u)
-            ap_dot_delta_u_minus = np.dot(psi.ap, delta_u_minus)
-            check = ap_dot_delta_u_minus>=0
-            check |= ap_dot_delta_u_minus<0 and not all(psi.a>=0) and not all(-psi.ap>=0)
-            if check:
-                flag = True
-                break
-        if not flag:
+        delta_t_minus = net.tVectorMinus(t)
+        ap_dot_delta_t_minus = np.dot(psi.ap, delta_t_minus)
+        check = ap_dot_delta_t_minus>=0
+        check |= ap_dot_delta_t_minus<0 and not all(psi.a>=0) or not all(-psi.ap>=0)
+        if not check:
             return True
     
     # If X not empty
@@ -356,20 +378,44 @@ def checkLocallyClosedBiSeparatorWithSyndrome(net: Net, phi: Formula, msrc, mtgt
 
     Return:
         bool: True iff phi is a locally closed bi-separator for (msrc,mtgt)
+        max_time: maximal time of atomic implication checks
     """
+    max_time = 0
+    total_time = 0
 
     if not phi.check(msrc, msrc) or not phi.check(mtgt, mtgt) or phi.check(msrc, mtgt):
         return False
     
     for t in net.transitions:
-        for clause in phi.clauses:
-            if not clauseImplication(net, clause, clause.syndrome[t.name], t):
-                return False
-
-    for t in net.transitions:
-        for clause in phi.clauses:
-            if not clauseImplication(net, clause, clause.syndrome[t.name], t, True):
-                return False
+        for C in phi.clauses:
+            j = C.forwardSyndrome[t.name][0]
+            Cp = phi.clauses[j]
+            for j in range(Cp.size):
+                psip_j = Cp.atoms[j]
+                i = C.forwardSyndrome[t.name][1][j]
+                psi_i = C.atoms[i]
+                start = time.time()
+                check = atomicImplication(net, psi_i, psip_j, t)
+                stop = time.time()
+                max_time = max(max_time, stop-start)
+                total_time += stop-start
+                if not check:
+                    return False, max_time
     
+    for t in net.transitions:
+        for C in phi.clauses:
+            j = C.backwardSyndrome[t.name][0]
+            Cp = phi.clauses[j]
+            for j in range(Cp.size):
+                psip_j = Cp.atoms[j]
+                i = C.backwardSyndrome[t.name][1][j]
+                psi_i = C.atoms[i]
+                start = time.time()
+                check = atomicImplication(net, psi_i, psip_j, t, inv=True)
+                stop = time.time()
+                max_time = max(max_time, stop-start)
+                total_time += stop-start
+                if not check:
+                    return False, max_time
 
-    return True
+    return True, max_time

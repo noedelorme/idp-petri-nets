@@ -14,7 +14,7 @@ python main.py
 
 ## References
 <a id="1" href="#">[1]</a> 
-Michael Blondin & Javier Esparza. Separators in Continuous Petri Nets. (2022)
+Michael Blondin & Javier Esparza. Separators in Continuous Petri Nets. (2022).
 
 <a id="2" href="https://doi.org/10.3233/FI-2015-1168">[2]</a> 
-Estibaliz Fraca & Serge Haddad. Complexity Analysis of Continuous Petri Nets. (2015)
+Estibaliz Fraca & Serge Haddad. Complexity Analysis of Continuous Petri Nets. (2015).

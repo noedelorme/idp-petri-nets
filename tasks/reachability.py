@@ -7,7 +7,7 @@ from objects.Net import Net
 
 def isFireable(net: Net, Tp, m, inv=False):
     """
-    Decision algorithm for membership of firing set
+    Decision algorithm for membership of firing set  (Algorithm 1 of [2]).
 
     Args:
         net: the net
@@ -40,14 +40,14 @@ def isFireable(net: Net, Tp, m, inv=False):
     return (True,Tp.difference(Tpp))
 
 
-
 def isReachable(net: Net, m, log=False):
     """
-    Decision algorithm for reachability
+    Decision algorithm for reachability (Algorithm 2 of [2]).
 
     Args:
         net: the net
         m: the target marking
+        log: True will print the avancement
 
     Return: 
         bool: True iff m is reachable from net.marking
@@ -61,7 +61,7 @@ def isReachable(net: Net, m, log=False):
     while len(Tp)>0:
         count_while += 1
 
-        nbsol = 0
+        nb_sol = 0
         sol = np.zeros(net.t)
 
         s = Solver()
@@ -88,17 +88,15 @@ def isReachable(net: Net, m, log=False):
             s.add(v[t.id]>0)
 
             if s.check() == sat:
-                nbsol += 1
+                nb_sol += 1
                 model = s.model()
-                # modelFraction = np.array([model[v[i]].as_fraction() for i in range(net.t)])
-                # sol += np.array([float(x.numerator)/float(x.denominator) for x in modelFraction])
-                modelFraction = modelToFloat(model,v)
-                sol += modelFraction
+                model_fraction = modelToFloat(model,v)
+                sol += model_fraction
                 
             s.pop()
 
-        if nbsol==0: return False
-        else: sol /= nbsol
+        if nb_sol==0: return False
+        else: sol /= nb_sol
 
         Tp = net.supportTransitionVector(sol)
         oTpo = set()
@@ -106,26 +104,26 @@ def isReachable(net: Net, m, log=False):
             oTpo = oTpo.union(t.preset)
             oTpo = oTpo.union(t.postset)
             
-        m0oTpo = net.restriction(net.marking, oTpo)
-        maxFSm0 = isFireable(net, Tp, m0oTpo)[1]
-        Tp = Tp.intersection(maxFSm0)
+        m0_oTpo = net.restriction(net.marking, oTpo)
+        maxFS_m0 = isFireable(net, Tp, m0_oTpo)[1]
+        Tp = Tp.intersection(maxFS_m0)
 
-        moTpo = net.restriction(m, oTpo)
-        maxFSm = isFireable(net, Tp, moTpo, True)[1]
-        Tp = Tp.intersection(maxFSm)
+        m_oTpo = net.restriction(m, oTpo)
+        maxFS_m = isFireable(net, Tp, m_oTpo, True)[1]
+        Tp = Tp.intersection(maxFS_m)
 
         if Tp == net.supportTransitionVector(sol): return True
     return False
 
 
-
 def isCoverable(net: Net, m, log=False):
     """
-    Decision algorithm for coverability
+    Decision algorithm for coverability (Algorithm 3 of [2]).
 
     Args:
         net: the net
         m: the target marking
+        log: True will print the avancement
 
     Return: 
         bool: True iff m is coverable from net.marking
@@ -139,20 +137,20 @@ def isCoverable(net: Net, m, log=False):
     while len(Tp)>0:
         count_while += 1
 
-        nbsol = 0
-        solv = np.zeros(net.t)
-        solw = np.zeros(net.p)
+        nb_sol = 0
+        sol_v = np.zeros(net.t)
+        sol_w = np.zeros(net.p)
 
         s = Solver()
         v = np.array([Real("v%i" % i) for i in range(net.t)])
         w = np.array([Real("w%i" % i) for i in range(net.p)])
-        positiveCstrtV = [v[i]>=0 for i in range(net.t)]
-        positiveCstrtW = [w[i]>=0 for i in range(net.p)]
+        cstrt_positive_V = [v[i]>=0 for i in range(net.t)]
+        cstrt_positive_W = [w[i]>=0 for i in range(net.p)]
         C = net.incidenceMatrix(Tp)
-        CDotv = sparseDot(C,v)
-        mMinusm0 = m-net.marking
-        matrixCstrt = [CDotv[i]-w[i] == mMinusm0[i] for i in range(net.p)]
-        s.add(positiveCstrtV+positiveCstrtW+matrixCstrt)
+        C_dot_v = sparseDot(C,v)
+        m_minus_m0 = m-net.marking
+        cstrt_matrix = [C_dot_v[i]-w[i] == m_minus_m0[i] for i in range(net.p)]
+        s.add(cstrt_positive_V+cstrt_positive_W+cstrt_matrix)
 
         count_for = 0
         avancement = 0
@@ -169,51 +167,51 @@ def isCoverable(net: Net, m, log=False):
             s.add(v[t.id]>0)
 
             if s.check() == sat:
-                nbsol += 1
+                nb_sol += 1
                 model = s.model()
-                modelFractionV = modelToFloat(model,v)
-                modelFractionW = modelToFloat(model,w)
-                solv += modelFractionV
-                solw += modelFractionW
+                model_fraction_V = modelToFloat(model,v)
+                model_fraction_W = modelToFloat(model,w)
+                sol_v += model_fraction_V
+                sol_w += model_fraction_W
                 
             s.pop()
 
         count = 0
         for p in net.places:
             count += 1
-            print("second step: "+str(round(count/net.p*100, 2))+"%")
+            if log: print("second step: "+str(round(count/net.p*100, 2))+"%")
 
             s.push()
             s.add(w[p.id]>0)
 
             if s.check() == sat:
-                nbsol += 1
+                nb_sol += 1
                 model = s.model()
-                modelFractionV = modelToFloat(model,v)
-                modelFractionW = modelToFloat(model,w)
-                solv += modelFractionV
-                solw += modelFractionW
+                model_fraction_V = modelToFloat(model,v)
+                model_fraction_W = modelToFloat(model,w)
+                sol_v += model_fraction_V
+                sol_w += model_fraction_W
                 
             s.pop()
 
-        if nbsol==0: return False
+        if nb_sol==0: return False
         else:
-            solv /= nbsol
-            solw /= nbsol
+            sol_v /= nb_sol
+            sol_w /= nb_sol
 
-        Tp = net.supportTransitionVector(solv)
+        Tp = net.supportTransitionVector(sol_v)
         oTpo = set()
         for t in Tp:
             oTpo = oTpo.union(t.preset)
             oTpo = oTpo.union(t.postset)
             
-        m0oTpo = net.restriction(net.marking, oTpo)
-        maxFSm0 = isFireable(net, Tp, m0oTpo)[1]
-        Tp = Tp.intersection(maxFSm0)
+        m0_oTpo = net.restriction(net.marking, oTpo)
+        maxFS_m0 = isFireable(net, Tp, m0_oTpo)[1]
+        Tp = Tp.intersection(maxFS_m0)
 
-        msolwoTpo = net.restriction(m+solw, oTpo)
-        maxFSm = isFireable(net, Tp, msolwoTpo, True)[1]
-        Tp = Tp.intersection(maxFSm)
+        m_sol_w_oTpo = net.restriction(m+sol_w, oTpo)
+        maxFS_m = isFireable(net, Tp, m_sol_w_oTpo, True)[1]
+        Tp = Tp.intersection(maxFS_m)
 
-        if Tp == net.supportTransitionVector(solv): return True
+        if Tp == net.supportTransitionVector(sol_v): return True
     return False

@@ -5,8 +5,16 @@ from objects.Net import Net, Transition, Place
 from objects.Formula import Formula, Clause, Atom
 
 def checkClauseUselessness(form: Formula, i):
-    # form = A or B with A = C1 and B = C2 or C3
-    # If (A and not-B) unsatisfiable, then A is useless
+    """
+    Check if a clause is useless.
+    
+    Args:
+        form: the formula
+        i: the index of the clause to check
+
+    Return:
+        bool: True iff the clause is useless
+    """
     if form.size <= 1:
         return False
 
@@ -42,18 +50,27 @@ def checkClauseUselessness(form: Formula, i):
     return s.check() == unsat
 
 
-def simplifySeparator(sep: Formula):
+def simplifySeparator(form: Formula):
+    """
+    Simplify a formula by removing useless clauses.
+    
+    Args:
+        form: the formula
+
+    Return:
+        currentSep: the simplified formula
+    """
     simplified = False
-    currentSep = sep
+    current_form = form
     while not simplified:
-        clauseRemoved = False
-        for i in range(len(currentSep.clauses)):
-            clause = currentSep.clauses[i]
-            if checkClauseUselessness(currentSep, i):
-                currentSep.clauses.pop(i) # remove clause from currentSep
-                currentSep.size -= 1
-                clauseRemoved = True
+        clause_removed = False
+        for i in range(len(current_form.clauses)):
+            clause = current_form.clauses[i]
+            if checkClauseUselessness(current_form, i):
+                current_form.clauses.pop(i) # remove clause from current_form
+                current_form.size -= 1
+                clause_removed = True
                 break
-        if not clauseRemoved: 
+        if not clause_removed: 
             simplified = True
-    return currentSep
+    return current_form

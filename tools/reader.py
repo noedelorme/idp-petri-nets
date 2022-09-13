@@ -1,4 +1,6 @@
-# Read a Petri Net file and create the corresponding Net object.
+"""
+Read a Petri Net file and create the corresponding Net object.
+"""
 
 import numpy as np
 from objects.Net import *

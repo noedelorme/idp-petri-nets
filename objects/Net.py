@@ -26,7 +26,6 @@ class Place:
         return self.name + ":" + str(self.id) + "(" + str(self.tokens) + ")"
 
 
-
 class InArc:
     """
     Class for incoming arcs.
@@ -47,7 +46,6 @@ class InArc:
         self.place.tokens -= alpha*self.weight
 
 
-
 class OutArc:
     """
     Class for outgoing arcs.
@@ -63,7 +61,6 @@ class OutArc:
     
     def use(self, alpha):
         self.place.tokens += alpha*self.weight
-
 
 
 class Transition:
@@ -110,7 +107,6 @@ class Transition:
             for inArc in self.inArcs: inArc.use(alpha)
             for outArc in self.outArcs: outArc.use(alpha)
         return enabled
-
 
 
 class Net:

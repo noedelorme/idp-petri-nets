@@ -38,7 +38,12 @@ class Clause:
 
     Attributs:
         size: number of atoms
+        id: index of the clause in the formula
         atoms: array of atoms
+        forwardSyndrome: forward syndrome
+        forwardSyndromeIH: forward induction hypothesis
+        backwardSyndrome: backward syndrome
+        backwardSyndromeIH: backward induction hypothesis
     """
 
     def __init__(self, atoms, id):
@@ -69,7 +74,6 @@ class Clause:
         return True
 
 
-
 class Formula:
     """
     Class for locally closed bi-separator, which are quantifier-free 
@@ -78,6 +82,7 @@ class Formula:
     Attributs:
         size: number of clauses
         clauses: array of clauses
+        net: the net that the formula is refered to
     """
 
     def __init__(self, net, clauses):

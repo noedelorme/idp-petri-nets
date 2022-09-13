@@ -1,1 +1,0 @@
-# Convert a colored Petri Net into a standard Petri net at the cost of enlarging the net.

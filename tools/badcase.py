@@ -1,3 +1,7 @@
+"""
+Generator program for the "bad-case" Petri net of any size.
+"""
+
 # number of places: 2*size+2
 # number of transitions: 3*size+1
 

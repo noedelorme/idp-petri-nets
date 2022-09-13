@@ -46,7 +46,7 @@ def runSeparator(path):
     print("--------------------------")
 
 
-# runReachability("./nets/reachability/homemade/figure-1-esparza")
+runReachability("./nets/reachability/homemade/figure-1-esparza")
 # runReachability("./nets/reachability/homemade/figure-1a-haddad")
 # runReachability("./nets/reachability/homemade/bad-case-1")
 # runReachability("./nets/reachability/homemade/bad-case-2")
@@ -54,7 +54,7 @@ def runSeparator(path):
 # runReachability("./nets/reachability/dekker_vs_satabs.2_multi_100_0")
 
 
-# runSeparator("./nets/reachability/homemade/figure-1-esparza")
+runSeparator("./nets/reachability/homemade/figure-1-esparza")
 # runSeparator("./nets/reachability/homemade/figure-1a-haddad")
 # runSeparator("./nets/reachability/homemade/bad-case-1")
 # runSeparator("./nets/reachability/homemade/bad-case-2")

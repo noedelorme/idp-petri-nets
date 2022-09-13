@@ -21,16 +21,16 @@ def largestSiphon(net: Net, Up, msrc):
         Q: the largest siphon of N_Up such that msrc(Q)=0
         vectQ: the vector corresponding to Q
     """
+    # Compute Q° as a transition vector
     vectQ = np.int64(msrc==0)
     vectQo = np.zeros(net.t)
-    # compute Q° as a transition vector
     for i in range(len(vectQ)):
         if vectQ[i]==1:
             for t in net.places[i].postset:
                 if t in Up:
                     vectQo[t.id] += 1
 
-    # while there is p in Q s.t. some t in °p is not in Q°
+    # While there is p in Q s.t. some t in °p is not in Q°
     flag = True
     while flag:
         flag = False
@@ -39,7 +39,7 @@ def largestSiphon(net: Net, Up, msrc):
             if vectQ[i]==1:
                 for t in net.places[i].preset:
                     if t in Up and vectQo[t.id]==0:
-                        # then we remove p and update Q°
+                        # Then we remove p and update Q°
                         vectQ[i] = 0
                         for u in net.places[i].postset:
                             vectQo[u.id] = max(0,vectQo[u.id]-1)
@@ -64,16 +64,16 @@ def largestTrap(net: Net, Up, mtgt):
         R: the largest trap of N_Up such that mtgt(Q)=0
         vectR: the vector corresponding to R
     """
+    # Compute °R as a transition vector
     vectR = np.int64(mtgt==0)
     vectoR = np.zeros(net.t)
-    # compute °Q as a transition vector
     for i in range(len(vectR)):
         if vectR[i]==1:
             for t in net.places[i].preset:
                 if t in Up:
                     vectoR[t.id] += 1
 
-    # while there is p in R s.t. some t in p° is not in °Q
+    # While there is p in R s.t. some t in p° is not in °R
     flag = True
     while flag:
         flag = False
@@ -82,7 +82,7 @@ def largestTrap(net: Net, Up, mtgt):
             if vectR[i]==1:
                 for t in net.places[i].postset:
                     if t in Up and vectoR[t.id]==0:
-                        # then we remove p and update °Q
+                        # Then we remove p and update °R
                         vectR[i] = 0
                         for u in net.places[i].preset:
                             vectoR[u.id] = max(0,vectoR[u.id]-1)
@@ -96,8 +96,8 @@ def largestTrap(net: Net, Up, mtgt):
 
 def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
     """
-    Constructs a locally closed bi-separator for (msrc,mtgt) given 
-    that mtgt is not reachable from msrc using transitions in U.
+    Constructs a locally closed bi-separator for (msrc,mtgt) given that mtgt 
+    is not reachable from msrc using transitions in U (Algorithm 1 of [1]).
 
     Args:
         net: the Petri net
@@ -106,7 +106,7 @@ def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
         mtgt: the target marking
 
     Return:
-        bisep: a bi-separator for (msrc,mtgt)
+        bisep: locally closed bi-separator for (msrc,mtgt)
     """
     # Case U empty
     if len(U)==0:
@@ -127,34 +127,34 @@ def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
     X = Solver()
     b = mtgt - msrc
     x = np.array([Real("x%i" % i) for i in range(net.t)])
-    positiveCstrt = [x[i]>=0 for i in range(net.t)]
+    cstrt_positive = [x[i]>=0 for i in range(net.t)]
     F = net.incidenceMatrix(net.transitions)
-    X.add(positiveCstrt)
-    FDotx = sparseDot(F, x)
-    matrixCstrt = [FDotx[i] == b[i] for i in range(net.p)]
-    X.add(matrixCstrt)
+    X.add(cstrt_positive)
+    F_dot_x = sparseDot(F, x)
+    cstrt_matrix = [F_dot_x[i] == b[i] for i in range(net.p)]
+    X.add(cstrt_matrix)
     vectU = transitionSetToVector(net, U)
-    inclusionCstrt = [simplify(Or(x[i]==0, bool(vectU[i]>0))) for i in range(net.t)]
-    X.add(inclusionCstrt)
+    cstrt_inclusion = [simplify(Or(x[i]==0, bool(vectU[i]>0))) for i in range(net.t)]
+    X.add(cstrt_inclusion)
 
     # Y solver initialization
     Y = Solver()
     y = np.array([Real("y%i" % i) for i in range(net.p)])
     FT = csr_matrix(F.transpose())
-    FTDoty = sparseDot(FT, y)
-    matrixCstrt = [FTDoty[t.id]>=0 for t in U]
-    Y.add(matrixCstrt)
-    bTDoty = b.dot(y)
-    Y.add(bTDoty <= 0)
+    FT_dot_y = sparseDot(FT, y)
+    cstrt_matrix = [FT_dot_y[t.id]>=0 for t in U]
+    Y.add(cstrt_matrix)
+    bT_dot_y = b.dot(y)
+    Y.add(bT_dot_y <= 0)
 
     # Case X empty
     if X.check() == unsat:
         Y.push()
-        Y.add(bTDoty < 0)
+        Y.add(bT_dot_y < 0)
         assert Y.check()==sat, "Error: Y_empty has no solution"
-        yempty = modelToFloat(Y.model(),y)
+        y_empty = modelToFloat(Y.model(),y)
         Y.pop()
-        clause = Clause([Atom(yempty, yempty)], 0)
+        clause = Clause([Atom(y_empty, y_empty)], 0)
         for t in net.transitions:
             clause.forwardSyndrome[t.name] = (clause.id,[0])
             clause.backwardSyndrome[t.name] = (clause.id,[0])
@@ -172,22 +172,22 @@ def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
         
         # Compute case 1 clauses
         clauses_case1 = []
-        clauseId = 0 # Incrementing  clause id
+        clause_id = 0 # Incrementing clause id
         clauses_Cu = dict() # key: transition name, value: clause id
         atoms_phi_inv = dict() # key: transition name, value: atom index
         phi_inv = []
-        UDiffUp = U.difference(Up)
-        for t in UDiffUp:
+        U_diff_Up = U.difference(Up)
+        for t in U_diff_Up:
             Y.push()
-            Y.add(bTDoty < FTDoty[t.id])
+            Y.add(bT_dot_y < FT_dot_y[t.id])
             assert Y.check()==sat, "Error: Y has no solution"
             yt = modelToFloat(Y.model(),y)
             Y.pop()
             atom = Atom(yt, yt)
             phi_inv.append(atom)
             atoms_phi_inv[t.name] = len(phi_inv)-1
-            clause = Clause([Atom(yt, yt, strict=True)], clauseId)
-            clauseId += 1
+            clause = Clause([Atom(yt, yt, strict=True)], clause_id)
+            clause_id += 1
             for u in net.transitions:
                 clause.forwardSyndrome[u.name] = (clause.id,[0])
                 clause.backwardSyndrome[u.name] = (clause.id,[0])
@@ -207,26 +207,26 @@ def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
         
         # Compute recursive call
         QoUoR = Qo.union(oR)
-        UpDiffQoUoR = Up.difference(QoUoR)
-        psi = generateLocallyClosedBiSeparator(net, UpDiffQoUoR, msrc, mtgt)
+        Up_diff_QoUoR = Up.difference(QoUoR)
+        psi = generateLocallyClosedBiSeparator(net, Up_diff_QoUoR, msrc, mtgt)
 
         # Compute case 2 clause
-        C2 = Clause(phi_inv+[Atom(-vectQ, vectR, strict=True)], clauseId)
-        clauseId += 1
+        C2 = Clause(phi_inv+[Atom(-vectQ, vectR, strict=True)], clause_id)
+        clause_id += 1
         clauses_case2 = [C2]
 
         # Compute case 3 clauses
         clauses_case3 = []
         atomSiphonTrap = Atom(vectR, -vectQ)
         for clause in psi.clauses:
-            clause3 = Clause(phi_inv+[atomSiphonTrap]+clause.atoms, clauseId)
-            clauseId += 1
+            clause3 = Clause(phi_inv+[atomSiphonTrap]+clause.atoms, clause_id)
+            clause_id += 1
             clause3.forwardSyndromeIH = clause.forwardSyndrome
             clause3.backwardSyndromeIH = clause.backwardSyndrome
             clauses_case3.append(clause3)
 
         # Syndrome assignement for C2
-        for u in UDiffUp:
+        for u in U_diff_Up:
             C2.forwardSyndrome[u.name] = (clauses_Cu[u.name],[atoms_phi_inv[u.name]])
             C2.backwardSyndrome[u.name] = (clauses_Cu[u.name],[atoms_phi_inv[u.name]])
         for u in Up:
@@ -235,7 +235,7 @@ def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
 
         # Forward syndrome assignement for Ci
         for Ci in clauses_case3:
-            for u in UDiffUp:
+            for u in U_diff_Up:
                 Ci.forwardSyndrome[u.name] = (clauses_Cu[u.name],[atoms_phi_inv[u.name]])
             for u in Up:
                 if u in oR:
@@ -250,7 +250,7 @@ def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
 
         # Backward syndrome assignement for Ci
         for Ci in clauses_case3:
-            for u in UDiffUp:
+            for u in U_diff_Up:
                 Ci.backwardSyndrome[u.name] = (clauses_Cu[u.name],[atoms_phi_inv[u.name]])
             for u in Up:
                 if u in Qo:
@@ -269,9 +269,21 @@ def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
         return bisep
 
 
-
-
 def atomicImplication(net: Net, psi: Atom, psip: Atom, t: Transition, inv=False):
+    """
+    Check atomic t-implication (explained in section 6 of [1]).
+
+    Args:
+        net: the Petri net
+        psi: the first atomic proposition
+        psip: the second atomic proposition
+        t: the transition
+        inv: True will peform the check in the transpose net
+
+    Return:
+        bool: True iff psi t-implies psip
+    """
+
     # Return True if X empty
     if psi.strict:
         check = not all(psi.a>=0) and not all(psi.ap<=0)
@@ -317,6 +329,19 @@ def atomicImplication(net: Net, psi: Atom, psip: Atom, t: Transition, inv=False)
 
 
 def clauseImplication(net: Net, phi: Clause, phip: Clause, t: Transition, inv=False):
+    """
+    Check clausal t-implication (explained in section 6 of [1]).
+
+    Args:
+        net: the Petri net
+        phi: the first clause
+        phip: the second clause
+        t: the transition
+        inv: True will peform the check in the transpose net
+
+    Return:
+        bool: True iff phi t-implies phip
+    """
     flag_j = True
     for phip_j in phip.atoms:
         flag_i = False
@@ -330,7 +355,8 @@ def clauseImplication(net: Net, phi: Clause, phip: Clause, t: Transition, inv=Fa
 
 def checkLocallyClosedBiSeparator(net: Net, phi: Formula, msrc, mtgt):
     """
-    Check in a given formula is a locally closed bi-separator for (msrc,mtgt).
+    Check in a given formula is a locally closed bi-separator for (msrc,mtgt) 
+    (explained in section 6 of [1]).
 
     Args:
         net: the Petri net
@@ -364,6 +390,7 @@ def checkLocallyClosedBiSeparator(net: Net, phi: Formula, msrc, mtgt):
             if not flag: return False
     
     return True
+
 
 def checkLocallyClosedBiSeparatorWithSyndrome(net: Net, phi: Formula, msrc, mtgt):
     """

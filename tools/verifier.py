@@ -1,4 +1,6 @@
-# Verify discrete reachability using Lola.
+"""
+Verify discrete reachability using Lola.
+"""
 
 import os
 

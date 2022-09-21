@@ -152,7 +152,7 @@ def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
         Y.push()
         Y.add(bT_dot_y < 0)
         assert Y.check()==sat, "Error: Y_empty has no solution"
-        y_empty = modelToFloat(Y.model(),y)
+        y_empty = modelToFloat(Y.model(), y, "y")
         Y.pop()
         clause = Clause([Atom(y_empty, y_empty)], 0)
         for t in net.transitions:
@@ -181,7 +181,7 @@ def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
             Y.push()
             Y.add(bT_dot_y < FT_dot_y[t.id])
             assert Y.check()==sat, "Error: Y has no solution"
-            yt = modelToFloat(Y.model(),y)
+            yt = modelToFloat(Y.model(), y, "y")
             Y.pop()
             atom = Atom(yt, yt)
             phi_inv.append(atom)
@@ -392,7 +392,7 @@ def checkLocallyClosedBiSeparator(net: Net, phi: Formula, msrc, mtgt):
     return True
 
 
-def checkLocallyClosedBiSeparatorWithSyndrome(net: Net, phi: Formula, msrc, mtgt):
+def checkLocallyClosedBiSeparatorWithSyndrome(net: Net, phi: Formula, msrc, mtgt, log=False):
     """
     Check in a given formula is a locally closed bi-separator for (msrc,mtgt), 
     using the syndrome computed during generateLocallyClosedBiSeparator.
@@ -409,12 +409,22 @@ def checkLocallyClosedBiSeparatorWithSyndrome(net: Net, phi: Formula, msrc, mtgt
     """
     max_time = 0
     total_time = 0
+    nb_atomic_check_performed = 0
 
     if not phi.check(msrc, msrc) or not phi.check(mtgt, mtgt) or phi.check(msrc, mtgt):
         return False
     
+    step = 1
+    step_avancement = 0
     for t in net.transitions:
+        if log:
+            print(">Step "+str(step)+"/"+str(net.t*2))
+            step += 1
+            step_avancement = 1
         for C in phi.clauses:
+            if log:
+                print(str(step_avancement)+"/"+str(len(phi.clauses)))
+                step_avancement += 1
             j = C.forwardSyndrome[t.name][0]
             Cp = phi.clauses[j]
             for j in range(Cp.size):
@@ -423,6 +433,7 @@ def checkLocallyClosedBiSeparatorWithSyndrome(net: Net, phi: Formula, msrc, mtgt
                 psi_i = C.atoms[i]
                 start = time.time()
                 check = atomicImplication(net, psi_i, psip_j, t)
+                nb_atomic_check_performed += 1
                 stop = time.time()
                 max_time = max(max_time, stop-start)
                 total_time += stop-start
@@ -430,7 +441,14 @@ def checkLocallyClosedBiSeparatorWithSyndrome(net: Net, phi: Formula, msrc, mtgt
                     return False, max_time
     
     for t in net.transitions:
+        if log:
+            print(">Step "+str(step)+"/"+str(net.t*2))
+            step += 1
+            step_avancement = 1
         for C in phi.clauses:
+            if log:
+                print(str(step_avancement)+"/"+str(len(phi.clauses)))
+                step_avancement += 1
             j = C.backwardSyndrome[t.name][0]
             Cp = phi.clauses[j]
             for j in range(Cp.size):
@@ -439,10 +457,11 @@ def checkLocallyClosedBiSeparatorWithSyndrome(net: Net, phi: Formula, msrc, mtgt
                 psi_i = C.atoms[i]
                 start = time.time()
                 check = atomicImplication(net, psi_i, psip_j, t, inv=True)
+                nb_atomic_check_performed += 1
                 stop = time.time()
                 max_time = max(max_time, stop-start)
                 total_time += stop-start
                 if not check:
                     return False, max_time
 
-    return True, max_time
+    return True, max_time, nb_atomic_check_performed

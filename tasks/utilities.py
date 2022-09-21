@@ -29,7 +29,7 @@ def sparseDot(A,v):
     return Av
 
 
-def modelToFloat(model, vars):
+def modelToFloat(model, vars, char):
     """
     Converts a Z3 model into a float numpy array.
 
@@ -43,12 +43,13 @@ def modelToFloat(model, vars):
     n = len(vars)
     modelFloat = np.zeros(n)
     for d in model.decls():
-        id = int(d.name()[1:])
-        texts = model[d].as_string().split("/")
-        if len(texts)==1:
-            modelFloat[id] = float(texts[0])
-        else:
-            modelFloat[id] = float(texts[0])/float(texts[1])
+        if d.name()[0] == char:
+            id = int(d.name()[1:])
+            texts = model[d].as_string().split("/")
+            if len(texts)==1:
+                modelFloat[id] = float(texts[0])
+            else:
+                modelFloat[id] = float(texts[0])/float(texts[1])
     return modelFloat
 
 

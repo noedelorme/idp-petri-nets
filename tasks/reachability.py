@@ -90,7 +90,7 @@ def isReachable(net: Net, m, log=False):
             if s.check() == sat:
                 nb_sol += 1
                 model = s.model()
-                model_fraction = modelToFloat(model,v)
+                model_fraction = modelToFloat(model, v, "v")
                 sol += model_fraction
                 
             s.pop()
@@ -169,8 +169,8 @@ def isCoverable(net: Net, m, log=False):
             if s.check() == sat:
                 nb_sol += 1
                 model = s.model()
-                model_fraction_V = modelToFloat(model,v)
-                model_fraction_W = modelToFloat(model,w)
+                model_fraction_V = modelToFloat(model, v, "v")
+                model_fraction_W = modelToFloat(model, w, "w")
                 sol_v += model_fraction_V
                 sol_w += model_fraction_W
                 
@@ -187,8 +187,8 @@ def isCoverable(net: Net, m, log=False):
             if s.check() == sat:
                 nb_sol += 1
                 model = s.model()
-                model_fraction_V = modelToFloat(model,v)
-                model_fraction_W = modelToFloat(model,w)
+                model_fraction_V = modelToFloat(model, v, "v")
+                model_fraction_W = modelToFloat(model, w, "w")
                 sol_v += model_fraction_V
                 sol_w += model_fraction_W
                 

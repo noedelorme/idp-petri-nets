@@ -6,7 +6,7 @@ Generator program for the "bad-case" Petri net of any size.
 # number of transitions: 3*size+1
 
 size = 1
-path = "./nets/reachability/homemade/bad-case-"+str(size)
+path = "./nets/unreachable/homemade/bad-case-"+str(size)
 
 with open(path+".lola", "a") as file:
     file.write("PLACE\n")

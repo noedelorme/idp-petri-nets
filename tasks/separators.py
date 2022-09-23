@@ -128,8 +128,8 @@ def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
     b = mtgt - msrc
     x = np.array([Real("x%i" % i) for i in range(net.t)])
     cstrt_positive = [x[i]>=0 for i in range(net.t)]
-    F = net.incidenceMatrix(net.transitions)
     X.add(cstrt_positive)
+    F = net.incidenceMatrix(net.transitions)
     F_dot_x = sparseDot(F, x)
     cstrt_matrix = [F_dot_x[i] == b[i] for i in range(net.p)]
     X.add(cstrt_matrix)
@@ -159,7 +159,6 @@ def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
             clause.forwardSyndrome[t.name] = (clause.id,[0])
             clause.backwardSyndrome[t.name] = (clause.id,[0])
         return Formula(net, [clause])
-
     #Case X none empty
     else:
         Up = set()
@@ -269,6 +268,66 @@ def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
         return bisep
 
 
+def atomicImplicationZ3(net: Net, psi: Atom, psip: Atom, t: Transition, inv=False):
+    """
+    Check atomic t-implication (explained in section 6 of [1]).
+
+    Args:
+        net: the Petri net
+        psi: the first atomic proposition
+        psip: the second atomic proposition
+        t: the transition
+        inv: True will peform the check in the transpose net
+
+    Return:
+        bool: True iff psi t-implies psip
+    """
+    # Return True if X empty
+    if psi.strict:
+        check = not all(psi.a>=0) and not all(psi.ap<=0)
+        if not check:
+            return True
+    else:
+        delta_t_minus = net.tVectorMinus(t)
+        ap_dot_delta_t_minus = np.dot(psi.ap, delta_t_minus)
+        check = ap_dot_delta_t_minus>=0
+        check |= ap_dot_delta_t_minus<0 and not all(psi.a>=0) or not all(-psi.ap>=0)
+        if not check:
+            return True
+
+    # If X not empty
+    a,ap,minus_bp,l = None,None,None,None
+    if not inv:
+        a = np.concatenate((psi.a, -psi.ap))
+        ap = np.concatenate((psip.a, -psip.ap))
+        minus_bp = np.dot(ap, np.concatenate((np.zeros(net.p), net.tVector(t))))
+        l = np.concatenate((np.zeros(net.p), net.tVectorMinus(t)))
+    else:
+        a = np.concatenate((-psi.ap, psi.a))
+        ap = np.concatenate((-psip.ap, psip.a))
+        minus_bp = np.dot(ap, np.concatenate((np.zeros(net.p), -net.tVector(t))))
+        l = np.concatenate((np.zeros(net.p), net.tVectorPlus(t)))
+    
+    s = Solver()
+    lamb = Real("lamb")
+    s.add(lamb>=0)
+    atoms = [lamb*a[i]>=ap[i] for i in range(2*net.p)]
+    product = 0
+    for i in range(2*net.p):
+        product += (lamb*a[i]-ap[i])*l[i]
+    product = simplify(product)
+    if not psip.strict:
+        atoms.append(product>=minus_bp)
+    elif not psi.strict:
+        atoms.append(product>minus_bp)
+    else:
+        atoms.append(Or(product>minus_bp, And(product==minus_bp, lamb>0)))
+
+    s.add(simplify(And(atoms)))
+    check = s.check()
+    return check==sat
+
+
 def atomicImplication(net: Net, psi: Atom, psip: Atom, t: Transition, inv=False):
     """
     Check atomic t-implication (explained in section 6 of [1]).
@@ -283,20 +342,18 @@ def atomicImplication(net: Net, psi: Atom, psip: Atom, t: Transition, inv=False)
     Return:
         bool: True iff psi t-implies psip
     """
-
+    # print("*****")
     # Return True if X empty
     if psi.strict:
-        check = not all(psi.a>=0) and not all(psi.ap<=0)
-        if not check:
-            return True
+        check = not all(psi.a>=0) or not all(psi.ap<=0)
+        if not check: return True
     else:
         delta_t_minus = net.tVectorMinus(t)
         ap_dot_delta_t_minus = np.dot(psi.ap, delta_t_minus)
         check = ap_dot_delta_t_minus>=0
-        check |= ap_dot_delta_t_minus<0 and not all(psi.a>=0) or not all(-psi.ap>=0)
-        if not check:
-            return True
-    
+        check |= ap_dot_delta_t_minus<0 and (not all(psi.a>=0) or not all(-psi.ap>=0))
+        if not check: return True
+
     # If X not empty
     a,ap,minus_bp,l = None,None,None,None
     if not inv:
@@ -309,23 +366,76 @@ def atomicImplication(net: Net, psi: Atom, psip: Atom, t: Transition, inv=False)
         ap = np.concatenate((-psip.ap, psip.a))
         minus_bp = np.dot(ap, np.concatenate((np.zeros(net.p), -net.tVector(t))))
         l = np.concatenate((np.zeros(net.p), net.tVectorPlus(t)))
-
-    s = Solver()
-    lamb = Real("lamb")
     
-    s.add([lamb*a[i]>=ap[i] for i in range(2*net.p)])
-    product = 0
+    
+    
+    lowerbound = 0
+    upperbound = None
     for i in range(2*net.p):
-        product += (lamb*a[i]-ap[i])*l[i]
-    product = simplify(product)
-    if not psip.strict:
-        s.add(product>=minus_bp)
-    elif not psi.strict:
-        s.add(product>minus_bp)
-    else:
-        s.add(Or(product>minus_bp, And(product==minus_bp, lamb>0)))
+        if a[i]==0 and ap[i]==0:
+            pass
+        elif a[i]==0 and ap[i]>0:
+            return False
+        elif a[i]==0 and ap[i]<0:
+            pass
+        elif a[i]>0 and ap[i]==0:
+            pass
+        elif a[i]>0 and ap[i]>0:
+            lowerbound = max(lowerbound, ap[i]/a[i])
+        elif a[i]>0 and ap[i]<0:
+            pass
+        elif a[i]<0 and ap[i]==0:
+            if upperbound != None:
+                upperbound = min(upperbound, 0)
+            else:
+                upperbound = 0
+        elif a[i]<0 and ap[i]>0:
+            return False
+        elif a[i]<0 and ap[i]<0:
+            if upperbound != None:
+                upperbound = min(upperbound, ap[i]/a[i])
+            else:
+                upperbound = ap[i]/a[i]
+    if upperbound!=None and lowerbound>upperbound: return False
     
-    return s.check()==sat
+    # (lamb*a-ap)*l = lamb*alpha-beta
+    # alpha = a[0]*l[0] + a[1]*l[1] + ...
+    # beta = ap[0]*l[0] + ap[1]*l[1] + ...
+    alpha = 0
+    beta = 0
+    for i in range(2*net.p):
+        alpha += a[i]*l[i]
+        beta += ap[i]*l[i]
+
+    if alpha==0:
+        if not psip.strict:
+            return minus_bp<=-beta
+        elif not psi.strict:
+            return minus_bp<-beta
+        else:
+            return minus_bp<-beta or (minus_bp == -beta and upperbound>0)
+    else:
+        L = (minus_bp+beta)/alpha
+        if not psip.strict:
+            # print(lowerbound)
+            # print(upperbound)
+            lowerbound = max(lowerbound, L)
+            # print(lowerbound)
+            # print(upperbound)
+            return upperbound==None or lowerbound<=upperbound
+        elif not psi.strict:
+            if L>lowerbound:
+                lowerbound = L # and lowerbound is now strict
+                return upperbound==None or lowerbound<upperbound
+            else:
+                return upperbound==None or lowerbound<=upperbound
+        else:
+            if L>lowerbound:
+                # lowerbound is now strict
+                if upperbound==None or L<upperbound: return True
+            else:
+                if upperbound==None or lowerbound<=upperbound: return True
+            return upperbound>=L and L>=lowerbound and L>0
 
 
 def clauseImplication(net: Net, phi: Clause, phip: Clause, t: Transition, inv=False):
@@ -412,7 +522,7 @@ def checkLocallyClosedBiSeparatorWithSyndrome(net: Net, phi: Formula, msrc, mtgt
     nb_atomic_check_performed = 0
 
     if not phi.check(msrc, msrc) or not phi.check(mtgt, mtgt) or phi.check(msrc, mtgt):
-        return False
+        return False, max_time, nb_atomic_check_performed
     
     step = 1
     step_avancement = 0
@@ -438,7 +548,7 @@ def checkLocallyClosedBiSeparatorWithSyndrome(net: Net, phi: Formula, msrc, mtgt
                 max_time = max(max_time, stop-start)
                 total_time += stop-start
                 if not check:
-                    return False, max_time
+                    return False, max_time, nb_atomic_check_performed
     
     for t in net.transitions:
         if log:
@@ -462,6 +572,6 @@ def checkLocallyClosedBiSeparatorWithSyndrome(net: Net, phi: Formula, msrc, mtgt
                 max_time = max(max_time, stop-start)
                 total_time += stop-start
                 if not check:
-                    return False, max_time
+                    return False, max_time, nb_atomic_check_performed
 
     return True, max_time, nb_atomic_check_performed

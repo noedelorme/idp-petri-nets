@@ -61,7 +61,7 @@ def createNet(path):
             transitionName = cleanLine(transitionLines[3*i][11:])
             consume = cleanLine(transitionLines[3*i+1][8:]).split(",")
             produce = cleanLine(transitionLines[3*i+2][8:]).split(",")
-
+            
             inArcs = set()
             for text in consume:
                 if len(text)>0:

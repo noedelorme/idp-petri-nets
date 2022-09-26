@@ -119,8 +119,8 @@ def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
 
         clause = Clause([Atom(a, a)], 0)
         for t in net.transitions:
-            clause.forwardSyndrome[t.name] = clause.id
-            clause.backwardSyndrome[t.name] = clause.id
+            clause.forwardSyndrome[t.name] = (clause.id,[0])
+            clause.backwardSyndrome[t.name] = (clause.id,[0])
         return Formula(net, [clause])
     
     # X solver initialization
@@ -128,14 +128,13 @@ def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
     b = mtgt - msrc
     x = np.array([Real("x%i" % i) for i in range(net.t)])
     cstrt_positive = [x[i]>=0 for i in range(net.t)]
-    X.add(cstrt_positive)
     F = net.incidenceMatrix(net.transitions)
     F_dot_x = sparseDot(F, x)
     cstrt_matrix = [F_dot_x[i] == b[i] for i in range(net.p)]
-    X.add(cstrt_matrix)
     vectU = transitionSetToVector(net, U)
     cstrt_inclusion = [simplify(Or(x[i]==0, bool(vectU[i]>0))) for i in range(net.t)]
-    X.add(cstrt_inclusion)
+    atoms = cstrt_positive + cstrt_matrix + cstrt_inclusion
+    X.add(simplify(And(atoms)))
 
     # Y solver initialization
     Y = Solver()
@@ -143,9 +142,8 @@ def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
     FT = csr_matrix(F.transpose())
     FT_dot_y = sparseDot(FT, y)
     cstrt_matrix = [FT_dot_y[t.id]>=0 for t in U]
-    Y.add(cstrt_matrix)
     bT_dot_y = b.dot(y)
-    Y.add(bT_dot_y <= 0)
+    Y.add(simplify(And(cstrt_matrix+[bT_dot_y <= 0])))
 
     # Case X empty
     if X.check() == unsat:

@@ -5,8 +5,8 @@ Generator program for the "bad-case" Petri net of any size.
 # number of places: 2*size+2
 # number of transitions: 3*size+1
 
-size = 1
-path = "./nets/unreachable/homemade/bad-case-"+str(size)
+size = 45
+path = "./nets/homemade/bad-case-"+str(size)
 
 with open(path+".lola", "a") as file:
     file.write("PLACE\n")

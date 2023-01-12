@@ -1,0 +1,50 @@
+
+Columns: 
+	
+	0_0: 
+		0_dirty	=	0
+		0_invalid	=	1
+		0_valid	=	0
+	1_0: 
+		1_dirty	=	0
+		1_invalid	=	1
+		1_valid	=	0
+Transitions: 
+	t_1_1: {0_dirty} -> {0_dirty}
+	t_1_2: {0_valid} -> {0_valid}
+	t_1_3: {1_dirty} -> {1_dirty}
+	t_1_4: {1_valid} -> {1_valid}
+	t_2_1: {0_invalid, 1_invalid} -> {0_valid, 1_invalid}
+	t_2_2: {0_invalid, 1_valid} -> {0_valid, 1_valid}
+	t_2_3: {0_invalid, 1_dirty} -> {0_valid, 1_invalid}
+	t_2_4: {0_invalid, 1_invalid} -> {0_invalid, 1_valid}
+	t_2_5: {0_valid, 1_invalid} -> {0_valid, 1_valid}
+	t_2_6: {0_dirty, 1_invalid} -> {0_invalid, 1_valid}
+	t_3_1: {0_valid, 1_invalid} -> {0_dirty, 1_invalid}
+	t_3_2: {0_valid, 1_valid} -> {0_dirty, 1_invalid}
+	t_3_3: {0_valid, 1_dirty} -> {0_dirty, 1_invalid}
+	t_3_4: {0_invalid, 1_valid} -> {0_invalid, 1_dirty}
+	t_3_5: {0_valid, 1_valid} -> {0_invalid, 1_dirty}
+	t_3_6: {0_dirty, 1_valid} -> {0_invalid, 1_dirty}
+	t_4_1: {0_dirty} -> {0_dirty}
+	t_4_2: {1_dirty} -> {1_dirty}
+	t_5_1: {0_invalid, 1_invalid} -> {0_dirty, 1_invalid}
+	t_5_2: {0_invalid, 1_valid} -> {0_dirty, 1_invalid}
+	t_5_3: {0_invalid, 1_dirty} -> {0_dirty, 1_invalid}
+	t_5_4: {0_invalid, 1_invalid} -> {0_invalid, 1_dirty}
+	t_5_5: {0_valid, 1_invalid} -> {0_invalid, 1_dirty}
+	t_5_6: {0_dirty, 1_invalid} -> {0_invalid, 1_dirty}
+	t_6_1: {0_dirty} -> {0_invalid}
+	t_6_2: {0_valid} -> {0_invalid}
+	t_6_3: {1_dirty} -> {1_invalid}
+	t_6_4: {1_valid} -> {1_invalid}
+bad_covers:
+
+
+{0_dirty, 1_dirty}
+
+{0_dirty, 1_dirty}
+
+{0_dirty, 1_valid}
+
+{0_valid, 1_dirty}

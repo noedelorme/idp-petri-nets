@@ -7,6 +7,8 @@ from tasks.utilities import *
 from objects.Net import Net, Transition, Place
 from objects.Formula import Formula, Clause, Atom
 
+EPS = 0.0000000001
+INF = 1e8
 
 def largestSiphon(net: Net, Up, msrc):
     """
@@ -130,7 +132,7 @@ def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
     cstrt_positive = [x[i]>=0 for i in range(net.t)]
     F = net.incidenceMatrix(net.transitions)
     F_dot_x = sparseDot(F, x)
-    cstrt_matrix = [F_dot_x[i] == b[i] for i in range(net.p)]
+    cstrt_matrix = [F_dot_x[i]==b[i] for i in range(net.p)]
     vectU = transitionSetToVector(net, U)
     cstrt_inclusion = [simplify(Or(x[i]==0, bool(vectU[i]>0))) for i in range(net.t)]
     atoms = cstrt_positive + cstrt_matrix + cstrt_inclusion
@@ -192,6 +194,9 @@ def generateLocallyClosedBiSeparator(net: Net, U, msrc, mtgt):
             clauses_case1.append(clause)
             if np.dot(yt,msrc)>np.dot(yt,mtgt):
                 clause.id = 0
+                for u in net.transitions:
+                    clause.forwardSyndrome[u.name] = (clause.id,[0])
+                    clause.backwardSyndrome[u.name] = (clause.id,[0])
                 return Formula(net, [clause])
 
         # Compute largest siphon and trap
@@ -340,7 +345,6 @@ def atomicImplication(net: Net, psi: Atom, psip: Atom, t: Transition, inv=False)
     Return:
         bool: True iff psi t-implies psip
     """
-    # print("*****")
     # Return True if X empty
     if psi.strict:
         check = not all(psi.a>=0) or not all(psi.ap<=0)
@@ -519,9 +523,12 @@ def checkLocallyClosedBiSeparatorWithSyndrome(net: Net, phi: Formula, msrc, mtgt
     total_time = 0
     nb_atomic_check_performed = 0
 
+    return_value = [True, max_time, nb_atomic_check_performed]
+
     if not phi.check(msrc, msrc) or not phi.check(mtgt, mtgt) or phi.check(msrc, mtgt):
-        return False, max_time, nb_atomic_check_performed
+        return_value = [False, max_time, nb_atomic_check_performed]
     
+
     step = 1
     step_avancement = 0
     for t in net.transitions:
@@ -546,7 +553,7 @@ def checkLocallyClosedBiSeparatorWithSyndrome(net: Net, phi: Formula, msrc, mtgt
                 max_time = max(max_time, stop-start)
                 total_time += stop-start
                 if not check:
-                    return False, max_time, nb_atomic_check_performed
+                    return_value = [False, max_time, nb_atomic_check_performed]
     
     for t in net.transitions:
         if log:
@@ -570,6 +577,8 @@ def checkLocallyClosedBiSeparatorWithSyndrome(net: Net, phi: Formula, msrc, mtgt
                 max_time = max(max_time, stop-start)
                 total_time += stop-start
                 if not check:
-                    return False, max_time, nb_atomic_check_performed
+                    return_value = [False, max_time, nb_atomic_check_performed]
 
-    return True, max_time, nb_atomic_check_performed
+    return_value[1] = max_time
+    if return_value[0]: return True, max_time, nb_atomic_check_performed
+    else: return return_value

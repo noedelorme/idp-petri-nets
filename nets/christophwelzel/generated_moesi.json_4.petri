@@ -1,0 +1,318 @@
+
+Columns: 
+	
+	0_0: 
+		0_exclusive	=	0
+		0_invalid	=	1
+		0_modified	=	0
+		0_owned	=	0
+		0_shared	=	0
+	1_0: 
+		1_exclusive	=	0
+		1_invalid	=	1
+		1_modified	=	0
+		1_owned	=	0
+		1_shared	=	0
+	2_0: 
+		2_exclusive	=	0
+		2_invalid	=	1
+		2_modified	=	0
+		2_owned	=	0
+		2_shared	=	0
+	3_0: 
+		3_exclusive	=	0
+		3_invalid	=	1
+		3_modified	=	0
+		3_owned	=	0
+		3_shared	=	0
+Transitions: 
+	t_1_1: {0_modified} -> {0_modified}
+	t_1_10: {2_exclusive} -> {2_exclusive}
+	t_1_11: {2_shared} -> {2_shared}
+	t_1_12: {2_owned} -> {2_owned}
+	t_1_13: {3_modified} -> {3_modified}
+	t_1_14: {3_exclusive} -> {3_exclusive}
+	t_1_15: {3_shared} -> {3_shared}
+	t_1_16: {3_owned} -> {3_owned}
+	t_1_2: {0_exclusive} -> {0_exclusive}
+	t_1_3: {0_shared} -> {0_shared}
+	t_1_4: {0_owned} -> {0_owned}
+	t_1_5: {1_modified} -> {1_modified}
+	t_1_6: {1_exclusive} -> {1_exclusive}
+	t_1_7: {1_shared} -> {1_shared}
+	t_1_8: {1_owned} -> {1_owned}
+	t_1_9: {2_modified} -> {2_modified}
+	t_2_1: {0_invalid, 1_invalid, 2_invalid, 3_invalid} -> {0_shared, 1_invalid, 2_invalid, 3_invalid}
+	t_2_10: {0_modified, 1_invalid, 2_modified, 3_modified} -> {0_owned, 1_shared, 2_owned, 3_owned}
+	t_2_11: {0_invalid, 1_invalid, 2_invalid, 3_invalid} -> {0_invalid, 1_invalid, 2_shared, 3_invalid}
+	t_2_12: {0_shared, 1_shared, 2_invalid, 3_shared} -> {0_shared, 1_shared, 2_shared, 3_shared}
+	t_2_13: {0_exclusive, 1_exclusive, 2_invalid, 3_exclusive} -> {0_shared, 1_shared, 2_shared, 3_shared}
+	t_2_14: {0_owned, 1_owned, 2_invalid, 3_owned} -> {0_owned, 1_owned, 2_shared, 3_owned}
+	t_2_15: {0_modified, 1_modified, 2_invalid, 3_modified} -> {0_owned, 1_owned, 2_shared, 3_owned}
+	t_2_16: {0_invalid, 1_invalid, 2_invalid, 3_invalid} -> {0_invalid, 1_invalid, 2_invalid, 3_shared}
+	t_2_17: {0_shared, 1_shared, 2_shared, 3_invalid} -> {0_shared, 1_shared, 2_shared, 3_shared}
+	t_2_18: {0_exclusive, 1_exclusive, 2_exclusive, 3_invalid} -> {0_shared, 1_shared, 2_shared, 3_shared}
+	t_2_19: {0_owned, 1_owned, 2_owned, 3_invalid} -> {0_owned, 1_owned, 2_owned, 3_shared}
+	t_2_2: {0_invalid, 1_shared, 2_shared, 3_shared} -> {0_shared, 1_shared, 2_shared, 3_shared}
+	t_2_20: {0_modified, 1_modified, 2_modified, 3_invalid} -> {0_owned, 1_owned, 2_owned, 3_shared}
+	t_2_3: {0_invalid, 1_exclusive, 2_exclusive, 3_exclusive} -> {0_shared, 1_shared, 2_shared, 3_shared}
+	t_2_4: {0_invalid, 1_owned, 2_owned, 3_owned} -> {0_shared, 1_owned, 2_owned, 3_owned}
+	t_2_5: {0_invalid, 1_modified, 2_modified, 3_modified} -> {0_shared, 1_owned, 2_owned, 3_owned}
+	t_2_6: {0_invalid, 1_invalid, 2_invalid, 3_invalid} -> {0_invalid, 1_shared, 2_invalid, 3_invalid}
+	t_2_7: {0_shared, 1_invalid, 2_shared, 3_shared} -> {0_shared, 1_shared, 2_shared, 3_shared}
+	t_2_8: {0_exclusive, 1_invalid, 2_exclusive, 3_exclusive} -> {0_shared, 1_shared, 2_shared, 3_shared}
+	t_2_9: {0_owned, 1_invalid, 2_owned, 3_owned} -> {0_owned, 1_shared, 2_owned, 3_owned}
+	t_3_1: {0_modified} -> {0_modified}
+	t_3_2: {1_modified} -> {1_modified}
+	t_3_3: {2_modified} -> {2_modified}
+	t_3_4: {3_modified} -> {3_modified}
+	t_4_1: {0_exclusive} -> {0_modified}
+	t_4_2: {1_exclusive} -> {1_modified}
+	t_4_3: {2_exclusive} -> {2_modified}
+	t_4_4: {3_exclusive} -> {3_modified}
+	t_5_1: {0_shared, 1_invalid, 2_invalid, 3_invalid} -> {0_exclusive, 1_invalid, 2_invalid, 3_invalid}
+	t_5_10: {0_owned, 1_modified, 2_modified, 3_modified} -> {0_exclusive, 1_invalid, 2_invalid, 3_invalid}
+	t_5_11: {0_invalid, 1_shared, 2_invalid, 3_invalid} -> {0_invalid, 1_exclusive, 2_invalid, 3_invalid}
+	t_5_12: {0_shared, 1_shared, 2_shared, 3_shared} -> {0_invalid, 1_exclusive, 2_invalid, 3_invalid}
+	t_5_13: {0_exclusive, 1_shared, 2_exclusive, 3_exclusive} -> {0_invalid, 1_exclusive, 2_invalid, 3_invalid}
+	t_5_14: {0_owned, 1_shared, 2_owned, 3_owned} -> {0_invalid, 1_exclusive, 2_invalid, 3_invalid}
+	t_5_15: {0_modified, 1_shared, 2_modified, 3_modified} -> {0_invalid, 1_exclusive, 2_invalid, 3_invalid}
+	t_5_16: {0_invalid, 1_owned, 2_invalid, 3_invalid} -> {0_invalid, 1_exclusive, 2_invalid, 3_invalid}
+	t_5_17: {0_shared, 1_owned, 2_shared, 3_shared} -> {0_invalid, 1_exclusive, 2_invalid, 3_invalid}
+	t_5_18: {0_exclusive, 1_owned, 2_exclusive, 3_exclusive} -> {0_invalid, 1_exclusive, 2_invalid, 3_invalid}
+	t_5_19: {0_owned, 1_owned, 2_owned, 3_owned} -> {0_invalid, 1_exclusive, 2_invalid, 3_invalid}
+	t_5_2: {0_shared, 1_shared, 2_shared, 3_shared} -> {0_exclusive, 1_invalid, 2_invalid, 3_invalid}
+	t_5_20: {0_modified, 1_owned, 2_modified, 3_modified} -> {0_invalid, 1_exclusive, 2_invalid, 3_invalid}
+	t_5_21: {0_invalid, 1_invalid, 2_shared, 3_invalid} -> {0_invalid, 1_invalid, 2_exclusive, 3_invalid}
+	t_5_22: {0_shared, 1_shared, 2_shared, 3_shared} -> {0_invalid, 1_invalid, 2_exclusive, 3_invalid}
+	t_5_23: {0_exclusive, 1_exclusive, 2_shared, 3_exclusive} -> {0_invalid, 1_invalid, 2_exclusive, 3_invalid}
+	t_5_24: {0_owned, 1_owned, 2_shared, 3_owned} -> {0_invalid, 1_invalid, 2_exclusive, 3_invalid}
+	t_5_25: {0_modified, 1_modified, 2_shared, 3_modified} -> {0_invalid, 1_invalid, 2_exclusive, 3_invalid}
+	t_5_26: {0_invalid, 1_invalid, 2_owned, 3_invalid} -> {0_invalid, 1_invalid, 2_exclusive, 3_invalid}
+	t_5_27: {0_shared, 1_shared, 2_owned, 3_shared} -> {0_invalid, 1_invalid, 2_exclusive, 3_invalid}
+	t_5_28: {0_exclusive, 1_exclusive, 2_owned, 3_exclusive} -> {0_invalid, 1_invalid, 2_exclusive, 3_invalid}
+	t_5_29: {0_owned, 1_owned, 2_owned, 3_owned} -> {0_invalid, 1_invalid, 2_exclusive, 3_invalid}
+	t_5_3: {0_shared, 1_exclusive, 2_exclusive, 3_exclusive} -> {0_exclusive, 1_invalid, 2_invalid, 3_invalid}
+	t_5_30: {0_modified, 1_modified, 2_owned, 3_modified} -> {0_invalid, 1_invalid, 2_exclusive, 3_invalid}
+	t_5_31: {0_invalid, 1_invalid, 2_invalid, 3_shared} -> {0_invalid, 1_invalid, 2_invalid, 3_exclusive}
+	t_5_32: {0_shared, 1_shared, 2_shared, 3_shared} -> {0_invalid, 1_invalid, 2_invalid, 3_exclusive}
+	t_5_33: {0_exclusive, 1_exclusive, 2_exclusive, 3_shared} -> {0_invalid, 1_invalid, 2_invalid, 3_exclusive}
+	t_5_34: {0_owned, 1_owned, 2_owned, 3_shared} -> {0_invalid, 1_invalid, 2_invalid, 3_exclusive}
+	t_5_35: {0_modified, 1_modified, 2_modified, 3_shared} -> {0_invalid, 1_invalid, 2_invalid, 3_exclusive}
+	t_5_36: {0_invalid, 1_invalid, 2_invalid, 3_owned} -> {0_invalid, 1_invalid, 2_invalid, 3_exclusive}
+	t_5_37: {0_shared, 1_shared, 2_shared, 3_owned} -> {0_invalid, 1_invalid, 2_invalid, 3_exclusive}
+	t_5_38: {0_exclusive, 1_exclusive, 2_exclusive, 3_owned} -> {0_invalid, 1_invalid, 2_invalid, 3_exclusive}
+	t_5_39: {0_owned, 1_owned, 2_owned, 3_owned} -> {0_invalid, 1_invalid, 2_invalid, 3_exclusive}
+	t_5_4: {0_shared, 1_owned, 2_owned, 3_owned} -> {0_exclusive, 1_invalid, 2_invalid, 3_invalid}
+	t_5_40: {0_modified, 1_modified, 2_modified, 3_owned} -> {0_invalid, 1_invalid, 2_invalid, 3_exclusive}
+	t_5_5: {0_shared, 1_modified, 2_modified, 3_modified} -> {0_exclusive, 1_invalid, 2_invalid, 3_invalid}
+	t_5_6: {0_owned, 1_invalid, 2_invalid, 3_invalid} -> {0_exclusive, 1_invalid, 2_invalid, 3_invalid}
+	t_5_7: {0_owned, 1_shared, 2_shared, 3_shared} -> {0_exclusive, 1_invalid, 2_invalid, 3_invalid}
+	t_5_8: {0_owned, 1_exclusive, 2_exclusive, 3_exclusive} -> {0_exclusive, 1_invalid, 2_invalid, 3_invalid}
+	t_5_9: {0_owned, 1_owned, 2_owned, 3_owned} -> {0_exclusive, 1_invalid, 2_invalid, 3_invalid}
+	t_6_1: {0_invalid, 1_invalid, 2_invalid, 3_invalid} -> {0_exclusive, 1_invalid, 2_invalid, 3_invalid}
+	t_6_10: {0_modified, 1_invalid, 2_modified, 3_modified} -> {0_invalid, 1_exclusive, 2_invalid, 3_invalid}
+	t_6_11: {0_invalid, 1_invalid, 2_invalid, 3_invalid} -> {0_invalid, 1_invalid, 2_exclusive, 3_invalid}
+	t_6_12: {0_shared, 1_shared, 2_invalid, 3_shared} -> {0_invalid, 1_invalid, 2_exclusive, 3_invalid}
+	t_6_13: {0_exclusive, 1_exclusive, 2_invalid, 3_exclusive} -> {0_invalid, 1_invalid, 2_exclusive, 3_invalid}
+	t_6_14: {0_owned, 1_owned, 2_invalid, 3_owned} -> {0_invalid, 1_invalid, 2_exclusive, 3_invalid}
+	t_6_15: {0_modified, 1_modified, 2_invalid, 3_modified} -> {0_invalid, 1_invalid, 2_exclusive, 3_invalid}
+	t_6_16: {0_invalid, 1_invalid, 2_invalid, 3_invalid} -> {0_invalid, 1_invalid, 2_invalid, 3_exclusive}
+	t_6_17: {0_shared, 1_shared, 2_shared, 3_invalid} -> {0_invalid, 1_invalid, 2_invalid, 3_exclusive}
+	t_6_18: {0_exclusive, 1_exclusive, 2_exclusive, 3_invalid} -> {0_invalid, 1_invalid, 2_invalid, 3_exclusive}
+	t_6_19: {0_owned, 1_owned, 2_owned, 3_invalid} -> {0_invalid, 1_invalid, 2_invalid, 3_exclusive}
+	t_6_2: {0_invalid, 1_shared, 2_shared, 3_shared} -> {0_exclusive, 1_invalid, 2_invalid, 3_invalid}
+	t_6_20: {0_modified, 1_modified, 2_modified, 3_invalid} -> {0_invalid, 1_invalid, 2_invalid, 3_exclusive}
+	t_6_3: {0_invalid, 1_exclusive, 2_exclusive, 3_exclusive} -> {0_exclusive, 1_invalid, 2_invalid, 3_invalid}
+	t_6_4: {0_invalid, 1_owned, 2_owned, 3_owned} -> {0_exclusive, 1_invalid, 2_invalid, 3_invalid}
+	t_6_5: {0_invalid, 1_modified, 2_modified, 3_modified} -> {0_exclusive, 1_invalid, 2_invalid, 3_invalid}
+	t_6_6: {0_invalid, 1_invalid, 2_invalid, 3_invalid} -> {0_invalid, 1_exclusive, 2_invalid, 3_invalid}
+	t_6_7: {0_shared, 1_invalid, 2_shared, 3_shared} -> {0_invalid, 1_exclusive, 2_invalid, 3_invalid}
+	t_6_8: {0_exclusive, 1_invalid, 2_exclusive, 3_exclusive} -> {0_invalid, 1_exclusive, 2_invalid, 3_invalid}
+	t_6_9: {0_owned, 1_invalid, 2_owned, 3_owned} -> {0_invalid, 1_exclusive, 2_invalid, 3_invalid}
+	t_7_1: {0_modified} -> {0_invalid}
+	t_7_10: {2_shared} -> {2_invalid}
+	t_7_11: {2_exclusive} -> {2_invalid}
+	t_7_12: {2_owned} -> {2_invalid}
+	t_7_13: {3_modified} -> {3_invalid}
+	t_7_14: {3_shared} -> {3_invalid}
+	t_7_15: {3_exclusive} -> {3_invalid}
+	t_7_16: {3_owned} -> {3_invalid}
+	t_7_2: {0_shared} -> {0_invalid}
+	t_7_3: {0_exclusive} -> {0_invalid}
+	t_7_4: {0_owned} -> {0_invalid}
+	t_7_5: {1_modified} -> {1_invalid}
+	t_7_6: {1_shared} -> {1_invalid}
+	t_7_7: {1_exclusive} -> {1_invalid}
+	t_7_8: {1_owned} -> {1_invalid}
+	t_7_9: {2_modified} -> {2_invalid}
+bad_covers:
+
+
+{0_modified, 1_modified}
+
+{2_modified, 0_modified}
+
+{3_modified, 0_modified}
+
+{0_modified, 1_modified}
+
+{2_modified, 1_modified}
+
+{3_modified, 1_modified}
+
+{2_modified, 0_modified}
+
+{2_modified, 1_modified}
+
+{2_modified, 3_modified}
+
+{0_modified, 3_modified}
+
+{3_modified, 1_modified}
+
+{2_modified, 3_modified}
+
+{0_exclusive, 1_exclusive}
+
+{0_exclusive, 2_exclusive}
+
+{0_exclusive, 3_exclusive}
+
+{0_exclusive, 1_exclusive}
+
+{2_exclusive, 1_exclusive}
+
+{3_exclusive, 1_exclusive}
+
+{0_exclusive, 2_exclusive}
+
+{2_exclusive, 1_exclusive}
+
+{3_exclusive, 2_exclusive}
+
+{0_exclusive, 3_exclusive}
+
+{3_exclusive, 1_exclusive}
+
+{3_exclusive, 2_exclusive}
+
+{0_shared, 1_exclusive}
+
+{0_shared, 2_exclusive}
+
+{0_shared, 3_exclusive}
+
+{1_shared, 0_exclusive}
+
+{1_shared, 2_exclusive}
+
+{1_shared, 3_exclusive}
+
+{2_shared, 0_exclusive}
+
+{2_shared, 1_exclusive}
+
+{2_shared, 3_exclusive}
+
+{0_exclusive, 3_shared}
+
+{1_exclusive, 3_shared}
+
+{2_exclusive, 3_shared}
+
+{0_owned, 1_exclusive}
+
+{0_owned, 2_exclusive}
+
+{0_owned, 3_exclusive}
+
+{1_owned, 0_exclusive}
+
+{1_owned, 2_exclusive}
+
+{1_owned, 3_exclusive}
+
+{0_exclusive, 2_owned}
+
+{1_exclusive, 2_owned}
+
+{3_exclusive, 2_owned}
+
+{0_exclusive, 3_owned}
+
+{3_owned, 1_exclusive}
+
+{3_owned, 2_exclusive}
+
+{0_exclusive, 1_modified}
+
+{2_modified, 0_exclusive}
+
+{0_exclusive, 3_modified}
+
+{0_modified, 1_exclusive}
+
+{2_modified, 1_exclusive}
+
+{3_modified, 1_exclusive}
+
+{0_modified, 2_exclusive}
+
+{2_exclusive, 1_modified}
+
+{3_modified, 2_exclusive}
+
+{0_modified, 3_exclusive}
+
+{3_exclusive, 1_modified}
+
+{2_modified, 3_exclusive}
+
+{0_owned, 1_modified}
+
+{2_modified, 0_owned}
+
+{0_owned, 3_modified}
+
+{1_owned, 0_modified}
+
+{2_modified, 1_owned}
+
+{1_owned, 3_modified}
+
+{0_modified, 2_owned}
+
+{1_modified, 2_owned}
+
+{3_modified, 2_owned}
+
+{3_owned, 0_modified}
+
+{3_owned, 1_modified}
+
+{2_modified, 3_owned}
+
+{0_shared, 1_modified}
+
+{2_modified, 0_shared}
+
+{0_shared, 3_modified}
+
+{1_shared, 0_modified}
+
+{2_modified, 1_shared}
+
+{1_shared, 3_modified}
+
+{2_shared, 0_modified}
+
+{2_shared, 1_modified}
+
+{2_shared, 3_modified}
+
+{0_modified, 3_shared}
+
+{1_modified, 3_shared}
+
+{2_modified, 3_shared}

@@ -133,6 +133,9 @@ class Net:
         self.marking = marking
         self.placeIds = placeIds
         self.transitionIds = transitionIds
+        self.size = 0
+        for t in transitions:
+            self.size += len(t.inArcs)+len(t.outArcs)
 
     def print(self):
         print("------------------------------------")

@@ -28,7 +28,6 @@ def sparseDot(A,v):
 
     return Av
 
-
 def modelToFloat(model, vars, char):
     """
     Converts a Z3 model into a float numpy array.

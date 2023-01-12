@@ -1,0 +1,150 @@
+
+Columns: 
+	
+	0_0: 
+		0_dirty	=	0
+		0_exclusive	=	0
+		0_invalid	=	1
+		0_shared	=	0
+	1_0: 
+		1_dirty	=	0
+		1_exclusive	=	0
+		1_invalid	=	1
+		1_shared	=	0
+	2_0: 
+		2_dirty	=	0
+		2_exclusive	=	0
+		2_invalid	=	1
+		2_shared	=	0
+Transitions: 
+	t_1_1: {0_dirty} -> {0_dirty}
+	t_1_2: {0_shared} -> {0_shared}
+	t_1_3: {0_exclusive} -> {0_exclusive}
+	t_1_4: {1_dirty} -> {1_dirty}
+	t_1_5: {1_shared} -> {1_shared}
+	t_1_6: {1_exclusive} -> {1_exclusive}
+	t_1_7: {2_dirty} -> {2_dirty}
+	t_1_8: {2_shared} -> {2_shared}
+	t_1_9: {2_exclusive} -> {2_exclusive}
+	t_2_1: {0_invalid, 1_invalid, 2_invalid} -> {0_exclusive, 1_invalid, 2_invalid}
+	t_2_2: {0_invalid, 1_invalid, 2_invalid} -> {0_invalid, 1_exclusive, 2_invalid}
+	t_2_3: {0_invalid, 1_invalid, 2_invalid} -> {0_invalid, 1_invalid, 2_exclusive}
+	t_3_1: {0_invalid, 1_dirty} -> {0_shared, 1_shared}
+	t_3_2: {0_invalid, 2_dirty} -> {0_shared, 2_shared}
+	t_3_3: {0_dirty, 1_invalid} -> {0_shared, 1_shared}
+	t_3_4: {1_invalid, 2_dirty} -> {1_shared, 2_shared}
+	t_3_5: {0_dirty, 2_invalid} -> {0_shared, 2_shared}
+	t_3_6: {1_dirty, 2_invalid} -> {1_shared, 2_shared}
+	t_4_1: {0_invalid, 1_shared, 2_invalid} -> {0_shared, 1_shared, 2_invalid}
+	t_4_10: {0_invalid, 1_dirty, 2_shared} -> {0_shared, 1_dirty, 2_shared}
+	t_4_11: {0_invalid, 1_shared, 2_shared} -> {0_shared, 1_shared, 2_shared}
+	t_4_12: {0_invalid, 1_exclusive, 2_shared} -> {0_shared, 1_shared, 2_shared}
+	t_4_13: {0_invalid, 1_invalid, 2_exclusive} -> {0_shared, 1_invalid, 2_shared}
+	t_4_14: {0_invalid, 1_dirty, 2_exclusive} -> {0_shared, 1_dirty, 2_shared}
+	t_4_15: {0_invalid, 1_shared, 2_exclusive} -> {0_shared, 1_shared, 2_shared}
+	t_4_16: {0_invalid, 1_exclusive, 2_exclusive} -> {0_shared, 1_shared, 2_shared}
+	t_4_17: {0_shared, 1_invalid, 2_invalid} -> {0_shared, 1_shared, 2_invalid}
+	t_4_18: {0_shared, 1_invalid, 2_dirty} -> {0_shared, 1_shared, 2_dirty}
+	t_4_19: {0_shared, 1_invalid, 2_shared} -> {0_shared, 1_shared, 2_shared}
+	t_4_2: {0_invalid, 1_shared, 2_dirty} -> {0_shared, 1_shared, 2_dirty}
+	t_4_20: {0_shared, 1_invalid, 2_exclusive} -> {0_shared, 1_shared, 2_shared}
+	t_4_21: {0_exclusive, 1_invalid, 2_invalid} -> {0_shared, 1_shared, 2_invalid}
+	t_4_22: {0_exclusive, 1_invalid, 2_dirty} -> {0_shared, 1_shared, 2_dirty}
+	t_4_23: {0_exclusive, 1_invalid, 2_shared} -> {0_shared, 1_shared, 2_shared}
+	t_4_24: {0_exclusive, 1_invalid, 2_exclusive} -> {0_shared, 1_shared, 2_shared}
+	t_4_25: {0_invalid, 1_invalid, 2_shared} -> {0_invalid, 1_shared, 2_shared}
+	t_4_26: {0_dirty, 1_invalid, 2_shared} -> {0_dirty, 1_shared, 2_shared}
+	t_4_27: {0_shared, 1_invalid, 2_shared} -> {0_shared, 1_shared, 2_shared}
+	t_4_28: {0_exclusive, 1_invalid, 2_shared} -> {0_shared, 1_shared, 2_shared}
+	t_4_29: {0_invalid, 1_invalid, 2_exclusive} -> {0_invalid, 1_shared, 2_shared}
+	t_4_3: {0_invalid, 1_shared, 2_shared} -> {0_shared, 1_shared, 2_shared}
+	t_4_30: {0_dirty, 1_invalid, 2_exclusive} -> {0_dirty, 1_shared, 2_shared}
+	t_4_31: {0_shared, 1_invalid, 2_exclusive} -> {0_shared, 1_shared, 2_shared}
+	t_4_32: {0_exclusive, 1_invalid, 2_exclusive} -> {0_shared, 1_shared, 2_shared}
+	t_4_33: {0_shared, 1_invalid, 2_invalid} -> {0_shared, 1_invalid, 2_shared}
+	t_4_34: {0_shared, 1_dirty, 2_invalid} -> {0_shared, 1_dirty, 2_shared}
+	t_4_35: {0_shared, 1_shared, 2_invalid} -> {0_shared, 1_shared, 2_shared}
+	t_4_36: {0_shared, 1_exclusive, 2_invalid} -> {0_shared, 1_shared, 2_shared}
+	t_4_37: {0_exclusive, 1_invalid, 2_invalid} -> {0_shared, 1_invalid, 2_shared}
+	t_4_38: {0_exclusive, 1_dirty, 2_invalid} -> {0_shared, 1_dirty, 2_shared}
+	t_4_39: {0_exclusive, 1_shared, 2_invalid} -> {0_shared, 1_shared, 2_shared}
+	t_4_4: {0_invalid, 1_shared, 2_exclusive} -> {0_shared, 1_shared, 2_shared}
+	t_4_40: {0_exclusive, 1_exclusive, 2_invalid} -> {0_shared, 1_shared, 2_shared}
+	t_4_41: {0_invalid, 1_shared, 2_invalid} -> {0_invalid, 1_shared, 2_shared}
+	t_4_42: {0_dirty, 1_shared, 2_invalid} -> {0_dirty, 1_shared, 2_shared}
+	t_4_43: {0_shared, 1_shared, 2_invalid} -> {0_shared, 1_shared, 2_shared}
+	t_4_44: {0_exclusive, 1_shared, 2_invalid} -> {0_shared, 1_shared, 2_shared}
+	t_4_45: {0_invalid, 1_exclusive, 2_invalid} -> {0_invalid, 1_shared, 2_shared}
+	t_4_46: {0_dirty, 1_exclusive, 2_invalid} -> {0_dirty, 1_shared, 2_shared}
+	t_4_47: {0_shared, 1_exclusive, 2_invalid} -> {0_shared, 1_shared, 2_shared}
+	t_4_48: {0_exclusive, 1_exclusive, 2_invalid} -> {0_shared, 1_shared, 2_shared}
+	t_4_5: {0_invalid, 1_exclusive, 2_invalid} -> {0_shared, 1_shared, 2_invalid}
+	t_4_6: {0_invalid, 1_exclusive, 2_dirty} -> {0_shared, 1_shared, 2_dirty}
+	t_4_7: {0_invalid, 1_exclusive, 2_shared} -> {0_shared, 1_shared, 2_shared}
+	t_4_8: {0_invalid, 1_exclusive, 2_exclusive} -> {0_shared, 1_shared, 2_shared}
+	t_4_9: {0_invalid, 1_invalid, 2_shared} -> {0_shared, 1_invalid, 2_shared}
+	t_5_1: {0_exclusive} -> {0_dirty}
+	t_5_2: {0_dirty} -> {0_dirty}
+	t_5_3: {1_exclusive} -> {1_dirty}
+	t_5_4: {1_dirty} -> {1_dirty}
+	t_5_5: {2_exclusive} -> {2_dirty}
+	t_5_6: {2_dirty} -> {2_dirty}
+	t_6_1: {0_shared, 1_invalid, 2_invalid} -> {0_dirty, 1_invalid, 2_invalid}
+	t_6_10: {0_dirty, 1_dirty, 2_shared} -> {0_dirty, 1_dirty, 2_dirty}
+	t_6_11: {0_shared, 1_shared, 2_shared} -> {0_invalid, 1_invalid, 2_dirty}
+	t_6_12: {0_exclusive, 1_exclusive, 2_shared} -> {0_exclusive, 1_exclusive, 2_dirty}
+	t_6_2: {0_shared, 1_dirty, 2_dirty} -> {0_dirty, 1_dirty, 2_dirty}
+	t_6_3: {0_shared, 1_shared, 2_shared} -> {0_dirty, 1_invalid, 2_invalid}
+	t_6_4: {0_shared, 1_exclusive, 2_exclusive} -> {0_dirty, 1_exclusive, 2_exclusive}
+	t_6_5: {0_invalid, 1_shared, 2_invalid} -> {0_invalid, 1_dirty, 2_invalid}
+	t_6_6: {0_dirty, 1_shared, 2_dirty} -> {0_dirty, 1_dirty, 2_dirty}
+	t_6_7: {0_shared, 1_shared, 2_shared} -> {0_invalid, 1_dirty, 2_invalid}
+	t_6_8: {0_exclusive, 1_shared, 2_exclusive} -> {0_exclusive, 1_dirty, 2_exclusive}
+	t_6_9: {0_invalid, 1_invalid, 2_shared} -> {0_invalid, 1_invalid, 2_dirty}
+	t_7_1: {0_invalid, 1_invalid, 2_invalid} -> {0_dirty, 1_invalid, 2_invalid}
+	t_7_10: {0_exclusive, 1_exclusive, 2_invalid} -> {0_invalid, 1_invalid, 2_dirty}
+	t_7_11: {0_dirty, 1_dirty, 2_invalid} -> {0_invalid, 1_invalid, 2_dirty}
+	t_7_12: {0_shared, 1_shared, 2_invalid} -> {0_invalid, 1_invalid, 2_dirty}
+	t_7_2: {0_invalid, 1_exclusive, 2_exclusive} -> {0_dirty, 1_invalid, 2_invalid}
+	t_7_3: {0_invalid, 1_dirty, 2_dirty} -> {0_dirty, 1_invalid, 2_invalid}
+	t_7_4: {0_invalid, 1_shared, 2_shared} -> {0_dirty, 1_invalid, 2_invalid}
+	t_7_5: {0_invalid, 1_invalid, 2_invalid} -> {0_invalid, 1_dirty, 2_invalid}
+	t_7_6: {0_exclusive, 1_invalid, 2_exclusive} -> {0_invalid, 1_dirty, 2_invalid}
+	t_7_7: {0_dirty, 1_invalid, 2_dirty} -> {0_invalid, 1_dirty, 2_invalid}
+	t_7_8: {0_shared, 1_invalid, 2_shared} -> {0_invalid, 1_dirty, 2_invalid}
+	t_7_9: {0_invalid, 1_invalid, 2_invalid} -> {0_invalid, 1_invalid, 2_dirty}
+	t_8_1: {0_dirty} -> {0_invalid}
+	t_8_2: {0_shared} -> {0_invalid}
+	t_8_3: {0_exclusive} -> {0_invalid}
+	t_8_4: {1_dirty} -> {1_invalid}
+	t_8_5: {1_shared} -> {1_invalid}
+	t_8_6: {1_exclusive} -> {1_invalid}
+	t_8_7: {2_dirty} -> {2_invalid}
+	t_8_8: {2_shared} -> {2_invalid}
+	t_8_9: {2_exclusive} -> {2_invalid}
+bad_covers:
+
+
+{0_dirty, 1_dirty}
+
+{0_dirty, 2_dirty}
+
+{0_dirty, 1_dirty}
+
+{2_dirty, 1_dirty}
+
+{0_dirty, 2_dirty}
+
+{2_dirty, 1_dirty}
+
+{0_dirty, 1_shared}
+
+{0_dirty, 2_shared}
+
+{0_shared, 1_dirty}
+
+{2_shared, 1_dirty}
+
+{0_shared, 2_dirty}
+
+{1_shared, 2_dirty}

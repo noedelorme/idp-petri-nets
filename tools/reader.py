@@ -98,19 +98,98 @@ def createMarking(net, path):
     with open(path, "r") as file:
         formula = file.read()
 
+    formula = formula.replace("AGEF","")
     formula = formula.replace("EF","")
+    formula = formula.replace("AG","")
     formula = formula.replace("\n","")
     formula = formula.strip()
     formula = formula.replace("(","")
     formula = formula.replace(")","")
 
-    atoms = formula.split(" AND ")
+    atoms = formula.split("AND")
     marking = np.zeros(net.p)
     for text in atoms:
         temp = text.replace(" ","")
         temp = temp.replace(">","")
+        temp = temp.replace("<","")
         placeName = temp.split("=")[0]
         token = float(temp.split("=")[1])
         marking[net.placeIds[placeName]] = token
 
     return marking
+
+
+def parsePetriFile(path):
+    name = path
+    p = 0
+    t = 0
+    places = []
+    transitions = set()
+    marking = []
+
+    placeIds = dict()
+    transitionIds = dict()
+
+    bad_covers = []
+
+    with open(path, "r") as file:
+        file.readline() #\n
+        file.readline() #Columns:
+        file.readline() #\n
+
+        line = file.readline()
+        while "Transitions:" not in line:
+            line = file.readline()
+            while len(line.split(":"))<=1:
+                line = line.replace("\t","")
+                line = line.replace(" ","")
+                p_name = line.split("=")[0]
+                p_token = int(line.split("=")[1])
+                places.append(Place(p, p_name, p_token))
+                marking.append(p_token)
+                placeIds[p_name] = p
+                p += 1
+                line = file.readline()
+
+        line = file.readline()         
+        while "bad_covers:" not in line:
+            line = line.replace("\t","")
+            line = line.replace(" ","")
+            line = line.replace("}","")
+            line = line.replace("{","")
+            line = line.replace("\n","")
+            content = line.split(":")
+            t_name = content[0]
+            preset_string = content[1].split("->")[0]
+            postset_string = content[1].split("->")[1]
+
+            inArcs = set()
+            for p_string in preset_string.split(","):
+                inArcs.add(InArc(places[placeIds[p_string]], 1))
+            
+            outArcs = set()
+            for p_string in postset_string.split(","):
+                outArcs.add(InArc(places[placeIds[p_string]], 1))
+
+            transitionIds[t_name] = t
+            transitions.add(Transition(t, t_name, inArcs, outArcs))
+            t += 1
+            line = file.readline()
+    
+        line = file.readline() #\n
+        line = file.readline() #\n
+        line = file.readline()
+        while len(line)>0:
+            current_cover = np.zeros(p)
+            line = line.replace("\t","")
+            line = line.replace(" ","")
+            line = line.replace("}","")
+            line = line.replace("{","")
+            line = line.replace("\n","")
+            for p_string in line.split(","):
+                current_cover[placeIds[p_string]] = 1
+            bad_covers.append(current_cover)
+            line = file.readline() #\n
+            line = file.readline()
+
+    return Net(name, places, transitions, np.array(marking), placeIds, transitionIds),bad_covers

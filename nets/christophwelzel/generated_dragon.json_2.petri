@@ -1,0 +1,202 @@
+
+Columns: 
+	
+	0_0: 
+		0_dirty	=	0
+		0_dirtyshared	=	0
+		0_exclusive	=	0
+		0_invalid	=	1
+		0_shared	=	0
+	1_0: 
+		1_dirty	=	0
+		1_dirtyshared	=	0
+		1_exclusive	=	0
+		1_invalid	=	1
+		1_shared	=	0
+Transitions: 
+	t_1_1: {0_dirty} -> {0_dirty}
+	t_1_2: {0_shared} -> {0_shared}
+	t_1_3: {0_exclusive} -> {0_exclusive}
+	t_1_4: {0_dirtyshared} -> {0_dirtyshared}
+	t_1_5: {1_dirty} -> {1_dirty}
+	t_1_6: {1_shared} -> {1_shared}
+	t_1_7: {1_exclusive} -> {1_exclusive}
+	t_1_8: {1_dirtyshared} -> {1_dirtyshared}
+	t_2_1: {0_invalid, 1_invalid} -> {0_exclusive, 1_invalid}
+	t_2_2: {0_invalid, 1_invalid} -> {0_invalid, 1_exclusive}
+	t_3_1: {0_invalid, 1_exclusive} -> {0_shared, 1_shared}
+	t_3_10: {0_invalid, 1_dirty} -> {0_shared, 1_dirtyshared}
+	t_3_11: {0_invalid, 1_dirtyshared} -> {0_shared, 1_dirtyshared}
+	t_3_12: {0_invalid, 1_dirtyshared} -> {0_shared, 1_dirtyshared}
+	t_3_13: {0_invalid, 1_dirtyshared} -> {0_shared, 1_dirtyshared}
+	t_3_14: {0_invalid, 1_dirtyshared} -> {0_shared, 1_dirtyshared}
+	t_3_15: {0_invalid, 1_dirtyshared} -> {0_shared, 1_dirtyshared}
+	t_3_16: {0_invalid, 1_shared} -> {0_shared, 1_shared}
+	t_3_17: {0_invalid, 1_shared} -> {0_shared, 1_shared}
+	t_3_18: {0_invalid, 1_shared} -> {0_shared, 1_shared}
+	t_3_19: {0_invalid, 1_shared} -> {0_shared, 1_shared}
+	t_3_2: {0_invalid, 1_exclusive} -> {0_shared, 1_shared}
+	t_3_20: {0_invalid, 1_shared} -> {0_shared, 1_shared}
+	t_3_21: {0_exclusive, 1_invalid} -> {0_shared, 1_shared}
+	t_3_22: {0_exclusive, 1_invalid} -> {0_shared, 1_shared}
+	t_3_23: {0_exclusive, 1_invalid} -> {0_shared, 1_shared}
+	t_3_24: {0_exclusive, 1_invalid} -> {0_shared, 1_shared}
+	t_3_25: {0_exclusive, 1_invalid} -> {0_shared, 1_shared}
+	t_3_26: {0_dirty, 1_invalid} -> {0_dirtyshared, 1_shared}
+	t_3_27: {0_dirty, 1_invalid} -> {0_dirtyshared, 1_shared}
+	t_3_28: {0_dirty, 1_invalid} -> {0_dirtyshared, 1_shared}
+	t_3_29: {0_dirty, 1_invalid} -> {0_dirtyshared, 1_shared}
+	t_3_3: {0_invalid, 1_exclusive} -> {0_shared, 1_shared}
+	t_3_30: {0_dirty, 1_invalid} -> {0_dirtyshared, 1_shared}
+	t_3_31: {0_dirtyshared, 1_invalid} -> {0_dirtyshared, 1_shared}
+	t_3_32: {0_dirtyshared, 1_invalid} -> {0_dirtyshared, 1_shared}
+	t_3_33: {0_dirtyshared, 1_invalid} -> {0_dirtyshared, 1_shared}
+	t_3_34: {0_dirtyshared, 1_invalid} -> {0_dirtyshared, 1_shared}
+	t_3_35: {0_dirtyshared, 1_invalid} -> {0_dirtyshared, 1_shared}
+	t_3_36: {0_shared, 1_invalid} -> {0_shared, 1_shared}
+	t_3_37: {0_shared, 1_invalid} -> {0_shared, 1_shared}
+	t_3_38: {0_shared, 1_invalid} -> {0_shared, 1_shared}
+	t_3_39: {0_shared, 1_invalid} -> {0_shared, 1_shared}
+	t_3_4: {0_invalid, 1_exclusive} -> {0_shared, 1_shared}
+	t_3_40: {0_shared, 1_invalid} -> {0_shared, 1_shared}
+	t_3_5: {0_invalid, 1_exclusive} -> {0_shared, 1_shared}
+	t_3_6: {0_invalid, 1_dirty} -> {0_shared, 1_dirtyshared}
+	t_3_7: {0_invalid, 1_dirty} -> {0_shared, 1_dirtyshared}
+	t_3_8: {0_invalid, 1_dirty} -> {0_shared, 1_dirtyshared}
+	t_3_9: {0_invalid, 1_dirty} -> {0_shared, 1_dirtyshared}
+	t_4_1: {0_dirty} -> {0_dirty}
+	t_4_2: {0_exclusive} -> {0_dirty}
+	t_4_3: {1_dirty} -> {1_dirty}
+	t_4_4: {1_exclusive} -> {1_dirty}
+	t_5_1: {0_dirtyshared, 1_invalid} -> {0_dirty, 1_invalid}
+	t_5_10: {0_invalid, 1_shared} -> {0_invalid, 1_dirty}
+	t_5_11: {0_exclusive, 1_shared} -> {0_exclusive, 1_dirty}
+	t_5_12: {0_dirty, 1_shared} -> {0_dirty, 1_dirty}
+	t_5_2: {0_dirtyshared, 1_exclusive} -> {0_dirty, 1_exclusive}
+	t_5_3: {0_dirtyshared, 1_dirty} -> {0_dirty, 1_dirty}
+	t_5_4: {0_shared, 1_invalid} -> {0_dirty, 1_invalid}
+	t_5_5: {0_shared, 1_exclusive} -> {0_dirty, 1_exclusive}
+	t_5_6: {0_shared, 1_dirty} -> {0_dirty, 1_dirty}
+	t_5_7: {0_invalid, 1_dirtyshared} -> {0_invalid, 1_dirty}
+	t_5_8: {0_exclusive, 1_dirtyshared} -> {0_exclusive, 1_dirty}
+	t_5_9: {0_dirty, 1_dirtyshared} -> {0_dirty, 1_dirty}
+	t_6_1: {0_shared, 1_shared} -> {0_dirtyshared, 1_shared}
+	t_6_10: {0_shared, 1_dirtyshared} -> {0_dirtyshared, 1_shared}
+	t_6_11: {0_dirtyshared, 1_shared} -> {0_dirtyshared, 1_shared}
+	t_6_12: {0_dirtyshared, 1_shared} -> {0_dirtyshared, 1_shared}
+	t_6_13: {0_dirtyshared, 1_shared} -> {0_dirtyshared, 1_shared}
+	t_6_14: {0_dirtyshared, 1_shared} -> {0_dirtyshared, 1_shared}
+	t_6_15: {0_dirtyshared, 1_shared} -> {0_dirtyshared, 1_shared}
+	t_6_16: {0_dirtyshared, 1_dirtyshared} -> {0_dirtyshared, 1_shared}
+	t_6_17: {0_dirtyshared, 1_dirtyshared} -> {0_dirtyshared, 1_shared}
+	t_6_18: {0_dirtyshared, 1_dirtyshared} -> {0_dirtyshared, 1_shared}
+	t_6_19: {0_dirtyshared, 1_dirtyshared} -> {0_dirtyshared, 1_shared}
+	t_6_2: {0_shared, 1_shared} -> {0_dirtyshared, 1_shared}
+	t_6_20: {0_dirtyshared, 1_dirtyshared} -> {0_dirtyshared, 1_shared}
+	t_6_21: {0_shared, 1_shared} -> {0_shared, 1_dirtyshared}
+	t_6_22: {0_shared, 1_shared} -> {0_shared, 1_dirtyshared}
+	t_6_23: {0_shared, 1_shared} -> {0_shared, 1_dirtyshared}
+	t_6_24: {0_shared, 1_shared} -> {0_shared, 1_dirtyshared}
+	t_6_25: {0_shared, 1_shared} -> {0_shared, 1_dirtyshared}
+	t_6_26: {0_dirtyshared, 1_shared} -> {0_shared, 1_dirtyshared}
+	t_6_27: {0_dirtyshared, 1_shared} -> {0_shared, 1_dirtyshared}
+	t_6_28: {0_dirtyshared, 1_shared} -> {0_shared, 1_dirtyshared}
+	t_6_29: {0_dirtyshared, 1_shared} -> {0_shared, 1_dirtyshared}
+	t_6_3: {0_shared, 1_shared} -> {0_dirtyshared, 1_shared}
+	t_6_30: {0_dirtyshared, 1_shared} -> {0_shared, 1_dirtyshared}
+	t_6_31: {0_shared, 1_dirtyshared} -> {0_shared, 1_dirtyshared}
+	t_6_32: {0_shared, 1_dirtyshared} -> {0_shared, 1_dirtyshared}
+	t_6_33: {0_shared, 1_dirtyshared} -> {0_shared, 1_dirtyshared}
+	t_6_34: {0_shared, 1_dirtyshared} -> {0_shared, 1_dirtyshared}
+	t_6_35: {0_shared, 1_dirtyshared} -> {0_shared, 1_dirtyshared}
+	t_6_36: {0_dirtyshared, 1_dirtyshared} -> {0_shared, 1_dirtyshared}
+	t_6_37: {0_dirtyshared, 1_dirtyshared} -> {0_shared, 1_dirtyshared}
+	t_6_38: {0_dirtyshared, 1_dirtyshared} -> {0_shared, 1_dirtyshared}
+	t_6_39: {0_dirtyshared, 1_dirtyshared} -> {0_shared, 1_dirtyshared}
+	t_6_4: {0_shared, 1_shared} -> {0_dirtyshared, 1_shared}
+	t_6_40: {0_dirtyshared, 1_dirtyshared} -> {0_shared, 1_dirtyshared}
+	t_6_5: {0_shared, 1_shared} -> {0_dirtyshared, 1_shared}
+	t_6_6: {0_shared, 1_dirtyshared} -> {0_dirtyshared, 1_shared}
+	t_6_7: {0_shared, 1_dirtyshared} -> {0_dirtyshared, 1_shared}
+	t_6_8: {0_shared, 1_dirtyshared} -> {0_dirtyshared, 1_shared}
+	t_6_9: {0_shared, 1_dirtyshared} -> {0_dirtyshared, 1_shared}
+	t_7_1: {0_invalid, 1_invalid} -> {0_dirty, 1_invalid}
+	t_7_2: {0_invalid, 1_invalid} -> {0_invalid, 1_dirty}
+	t_8_1: {0_invalid, 1_shared} -> {0_dirtyshared, 1_shared}
+	t_8_10: {0_invalid, 1_dirtyshared} -> {0_dirtyshared, 1_shared}
+	t_8_11: {0_invalid, 1_exclusive} -> {0_dirtyshared, 1_shared}
+	t_8_12: {0_invalid, 1_exclusive} -> {0_dirtyshared, 1_shared}
+	t_8_13: {0_invalid, 1_exclusive} -> {0_dirtyshared, 1_shared}
+	t_8_14: {0_invalid, 1_exclusive} -> {0_dirtyshared, 1_shared}
+	t_8_15: {0_invalid, 1_exclusive} -> {0_dirtyshared, 1_shared}
+	t_8_16: {0_invalid, 1_dirty} -> {0_dirtyshared, 1_shared}
+	t_8_17: {0_invalid, 1_dirty} -> {0_dirtyshared, 1_shared}
+	t_8_18: {0_invalid, 1_dirty} -> {0_dirtyshared, 1_shared}
+	t_8_19: {0_invalid, 1_dirty} -> {0_dirtyshared, 1_shared}
+	t_8_2: {0_invalid, 1_shared} -> {0_dirtyshared, 1_shared}
+	t_8_20: {0_invalid, 1_dirty} -> {0_dirtyshared, 1_shared}
+	t_8_21: {0_shared, 1_invalid} -> {0_shared, 1_dirtyshared}
+	t_8_22: {0_shared, 1_invalid} -> {0_shared, 1_dirtyshared}
+	t_8_23: {0_shared, 1_invalid} -> {0_shared, 1_dirtyshared}
+	t_8_24: {0_shared, 1_invalid} -> {0_shared, 1_dirtyshared}
+	t_8_25: {0_shared, 1_invalid} -> {0_shared, 1_dirtyshared}
+	t_8_26: {0_dirtyshared, 1_invalid} -> {0_shared, 1_dirtyshared}
+	t_8_27: {0_dirtyshared, 1_invalid} -> {0_shared, 1_dirtyshared}
+	t_8_28: {0_dirtyshared, 1_invalid} -> {0_shared, 1_dirtyshared}
+	t_8_29: {0_dirtyshared, 1_invalid} -> {0_shared, 1_dirtyshared}
+	t_8_3: {0_invalid, 1_shared} -> {0_dirtyshared, 1_shared}
+	t_8_30: {0_dirtyshared, 1_invalid} -> {0_shared, 1_dirtyshared}
+	t_8_31: {0_exclusive, 1_invalid} -> {0_shared, 1_dirtyshared}
+	t_8_32: {0_exclusive, 1_invalid} -> {0_shared, 1_dirtyshared}
+	t_8_33: {0_exclusive, 1_invalid} -> {0_shared, 1_dirtyshared}
+	t_8_34: {0_exclusive, 1_invalid} -> {0_shared, 1_dirtyshared}
+	t_8_35: {0_exclusive, 1_invalid} -> {0_shared, 1_dirtyshared}
+	t_8_36: {0_dirty, 1_invalid} -> {0_shared, 1_dirtyshared}
+	t_8_37: {0_dirty, 1_invalid} -> {0_shared, 1_dirtyshared}
+	t_8_38: {0_dirty, 1_invalid} -> {0_shared, 1_dirtyshared}
+	t_8_39: {0_dirty, 1_invalid} -> {0_shared, 1_dirtyshared}
+	t_8_4: {0_invalid, 1_shared} -> {0_dirtyshared, 1_shared}
+	t_8_40: {0_dirty, 1_invalid} -> {0_shared, 1_dirtyshared}
+	t_8_5: {0_invalid, 1_shared} -> {0_dirtyshared, 1_shared}
+	t_8_6: {0_invalid, 1_dirtyshared} -> {0_dirtyshared, 1_shared}
+	t_8_7: {0_invalid, 1_dirtyshared} -> {0_dirtyshared, 1_shared}
+	t_8_8: {0_invalid, 1_dirtyshared} -> {0_dirtyshared, 1_shared}
+	t_8_9: {0_invalid, 1_dirtyshared} -> {0_dirtyshared, 1_shared}
+	t_9_1: {0_dirty} -> {0_invalid}
+	t_9_2: {0_shared} -> {0_invalid}
+	t_9_3: {0_exclusive} -> {0_invalid}
+	t_9_4: {0_dirtyshared} -> {0_invalid}
+	t_9_5: {1_dirty} -> {1_invalid}
+	t_9_6: {1_shared} -> {1_invalid}
+	t_9_7: {1_exclusive} -> {1_invalid}
+	t_9_8: {1_dirtyshared} -> {1_invalid}
+bad_covers:
+
+
+{0_dirty, 1_exclusive}
+
+{0_exclusive, 1_dirty}
+
+{0_dirty, 1_shared}
+
+{0_shared, 1_dirty}
+
+{0_dirty, 1_dirtyshared}
+
+{0_dirtyshared, 1_dirty}
+
+{1_shared, 0_exclusive}
+
+{0_shared, 1_exclusive}
+
+{0_dirtyshared, 1_exclusive}
+
+{1_dirtyshared, 0_exclusive}
+
+{0_dirty, 1_dirty}
+
+{0_dirty, 1_dirty}
+
+{0_exclusive, 1_exclusive}
+
+{0_exclusive, 1_exclusive}
